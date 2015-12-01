@@ -18,7 +18,6 @@ int main(int argc, char *argv[]){
   int i;
 	int count=0;
 	int bottom=0;
-	int delay=1;
   int score=0;
   int level=1;
   char next[4][4];
@@ -36,7 +35,7 @@ int main(int argc, char *argv[]){
 	pezzoRand(p_cur);
   pezzoRand(p_next);
 	add (p_cur);
-	while (c = getch()){
+	while ((c = getch())){
 		switch (c){
 			case KEY_LEFT:
 				move_left(p_cur);
@@ -74,7 +73,7 @@ int main(int argc, char *argv[]){
 			bottom=0;
       score++;	pezzoRand(p_cur);
       pezzoRand(p_next);
-      if (i=eliminateLine()){
+      if ((i=eliminateLine())){
 			     score += i;
            count=0;
       }

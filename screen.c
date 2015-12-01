@@ -62,13 +62,13 @@ void printScore(int score, int level, char next[4][4]){
 
 
 int newGame(){
-	int ret;
+	int ret=0;
 	char c;
 	nodelay(stdscr, FALSE);
   wclear(score_win);
 	wprintw(score_win,"Giovare un'altra partita(y/n)?");
 	wrefresh(score_win);
-	while (c = getch()){
+	while ((c = getch())){
 		if (c=='y'){
 			ret=1;
 			break;
