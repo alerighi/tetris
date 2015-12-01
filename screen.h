@@ -40,8 +40,6 @@
 #define SCORE_W_SIZE_X COLS-(SCORE_W_START_X)
 #define SCORE_W_SIZE_Y GAME_W_SIZE_Y-4
 
-
-
 WINDOW *game;
 WINDOW *game_o;
 WINDOW *score_win;

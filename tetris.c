@@ -3,51 +3,47 @@
  * di Alessandro Righi
  */
 
-/* TODO: - riscrivere funzioni per usare la struttura pezzo
- *       - usare un header per il Programma
- *       - gestione punteggio
- *       - preview pezzo successivo
- *       - pezzi del tetris colorati
+/* TODO: - realizzare struttura gioco
+ * 			 - pezzi del tetris colorati
  *       - bugfix vari
  */
 
 #include "tetris.h"
+
 
 int main(int argc, char *argv[]){
 	int c;
   int i;
 	int count=0;
 	int bottom=0;
-  int score=0;
-  int level=1;
+
+	game_t game_o;
+
   char next[4][4];
-	pezzo_t *p_cur = malloc(sizeof(pezzo_t));
-  pezzo_t *p_next = malloc(sizeof(pezzo_t));
 
 	srand(time(NULL));
 
 	/* init ncurses */
 	initCurses();
 
-	init();
 	/* main loop */
 
-	pezzoRand(p_cur);
-  pezzoRand(p_next);
-	add (p_cur);
+	game_o = start_new_game();
+
+	add (&game_o.p_cur);
 	while ((c = getch())){
 		switch (c){
 			case KEY_LEFT:
-				move_left(p_cur);
+				move_left(&game_o.p_cur);
 				break;
 			case KEY_RIGHT:
-				move_right(p_cur);
+				move_right(&game_o.p_cur);
 				break;
 			case KEY_UP:
-				rotate(p_cur);
+				rotate(&game_o.p_cur);
 				break;
 			case KEY_DOWN:
-				while (!move_down(p_cur));
+				while (!move_down(&game_o.p_cur));
         bottom=1;
 				break;
       case 'p': /* pause */
@@ -55,46 +51,41 @@ int main(int argc, char *argv[]){
           usleep(100000);
         break;
       case 'r':
-        init();
-        score=0;
-        level=1;
-        pezzoRand(p_cur);
-        pezzoRand(p_next);
+				game_o = start_new_game();
         break;
 		}
 
 		count++;
-		if (count>=150-pow(level,2)){
+		if (count>=150-pow(game_o.level,2)){
 			count=0;
-			bottom = move_down(p_cur);
+			bottom = move_down(&game_o.p_cur);
 		}
 
 		if (bottom){
 			bottom=0;
-      score++;	pezzoRand(p_cur);
-      pezzoRand(p_next);
+      game_o.score++;
+			pezzoRand(&game_o.p_cur);
+      pezzoRand(&game_o.p_next);
       if ((i=eliminateLine())){
-			     score += i;
+			     game_o.score += i*10;
            count=0;
       }
-      if (!(score%((int)pow(level+3,2))))
-        level++;
+      if (!(game_o.score%((int)pow(game_o.level+3,2))))
+        game_o.level++;
 			if (lost()){
 				if (newGame()){
-					init();
-          score=0;
-          level=1;
+					game_o = start_new_game();
 				} else {
 					quit();
 				}
 			}
-      memcpy(p_cur, p_next, sizeof(pezzo_t));
-			pezzoRand(p_next);
-			add(p_cur);
+      memcpy(&game_o.p_cur, &game_o.p_next, sizeof(pezzo_t));
+			pezzoRand(&game_o.p_next);
+			add(&game_o.p_cur);
 		}
 		usleep(2000);
-    getElement(p_next, next);
-    printScore(score, level, next);
+    getElement(&game_o.p_next, next);
+    printScore(game_o.score, game_o.level, next);
 
 		printMatrix();
 	}

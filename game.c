@@ -45,6 +45,15 @@ const char tetris[7][4][4][4] = {
 	}
 };
 
+game_t start_new_game(){
+  game_t game;
+	init();
+	game.score=0;
+	game.level=1;
+	pezzoRand(&game.p_cur);
+	pezzoRand(&game.p_next);
+	return game;
+}
 
 void pezzoRand(pezzo_t* p){
 	p->x=4;
