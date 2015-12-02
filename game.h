@@ -4,7 +4,7 @@
 #include "screen.h"
 
 typedef struct pezzo_s {
-	int p,r,y,x;
+  int p,r,y,x;
 } pezzo_t;
 
 typedef struct game_s {
