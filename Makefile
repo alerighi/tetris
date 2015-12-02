@@ -11,4 +11,5 @@ $(BINNAME): $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm $(OBJ) $(BINNAME)
+	rm -f *.o
+	rm -f $(BINNAME)
