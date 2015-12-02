@@ -4,8 +4,11 @@
  */
 
 /* TODO: - realizzare struttura gioco
- *        - pezzi del tetris colorati
+ *       - sistemare il codice
+ *       - sistemare file e aggiungere funzioni
+ *       - pezzi del tetris colorati
  *       - bugfix vari
+ *       - commenti !!!
  */
 
 #include "tetris.h"
