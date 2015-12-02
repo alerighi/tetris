@@ -5,11 +5,11 @@ BINNAME=tetris
 OBJ=tetris.o game.o screen.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+  $(CC) -c -o $@ $< $(CFLAGS)
 
 $(BINNAME): $(OBJ)
-	$(CC) -o $@ $^ $(LDFLAGS)
+  $(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm -f *.o
-	rm -f $(BINNAME)
+  rm -f *.o
+  rm -f $(BINNAME)
