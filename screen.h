@@ -20,6 +20,10 @@
               "  ##    ##        ##    ##  ##   ##      ##\n"\
               "  ##    ######    ##    ##   ##  ##  ######\n"
 
+#define COMANDI "\nfrecce: muovi"\
+                "\np: pause"\
+                "\nr: restart"
+
 #define TITLE_W_START_X CENTER-TITLE_CHARS/2-5
 #define TITLE_W_START_Y 0
 #define TITLE_W_SIZE_X TITLE_CHARS

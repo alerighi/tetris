@@ -68,7 +68,6 @@ int main(int argc, char *argv[]){
       bottom=0;
       game_o.score++;
       pezzoRand(&game_o.p_cur);
-      pezzoRand(&game_o.p_next);
       if ((i=eliminateLine())){
            game_o.score += i*10;
            count=0;

@@ -57,6 +57,7 @@ void printScore(int score, int level, char next[4][4]){
         wprintw(score_win, "%c%c", next[i][e], next[i][e]);
     wprintw(score_win, "\n");
   }
+  wprintw(score_win, COMANDI);
   wrefresh(score_win);
 }
 
