@@ -77,6 +77,7 @@ int main(int argc, char *argv[]){
         game_o.level++;
       if (lost()){
         if (newGame()){
+          memset(screen, 0, sizeof(screen));
           game_o = start_new_game();
         } else {
           quit();
