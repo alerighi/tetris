@@ -1,17 +1,41 @@
 #include "screen.h"
 
-void init(){
-  for (int i=0;i<Y;i++){
-    memset(screen[i],' ',X);
+static WINDOW *game;
+static WINDOW *game_o;
+static WINDOW *score_win;
+static WINDOW *title;
+
+char screen[Y][X];
+chtype block = ' ' | A_REVERSE;
+
+
+void print_title(char *str) {
+  int i;
+  for (i = 0; i < strlen(str); i++) {
+    if (str[i] == '\n')  waddch(title, '\n');
+    else if (str[i] != ' ') {
+       wattron(title, COLOR_PAIR(str[i]-48));
+       waddch(title, block);
+       wattroff(title, COLOR_PAIR(str[i]-48));
+    }
+    else waddch(title, ' ');
   }
+  wrefresh(title);
 }
 
 void printMatrix(){
-  int e,i;
-  wclear(game);
-  for (e=0;e<Y;e++){
-    for (i=0;i<X;i++){
-      wprintw(game, "%c%c",screen[e][i],screen[e][i]);
+  int y, x;
+  for (y = 0; y < Y; y++) {
+    for (x = 0; x < X; x++) {
+      if (screen[y][x]) {
+        wattron(game, COLOR_PAIR(screen[y][x]));
+        mvwaddch(game, y, x*2, block);
+        mvwaddch(game, y, 1+x*2, block);
+        wattroff(game, COLOR_PAIR(screen[y][x]));
+      } else {
+        mvwaddch(game, y, x*2, ' ');
+        mvwaddch(game, y, 1+x*2, ' ');
+      }
     }
   }
   wrefresh(game);
@@ -21,7 +45,7 @@ int eliminateLine(){
   int i,j,e,ret=0;
   for (i=0;i<Y;i++){
     for (j=0;j<X;j++)
-      if (screen[i][j]!='#')
+      if (!screen[i][j])
           break;
 
     /* se il ciclo termina completamente allora elimino la riga */
@@ -38,7 +62,7 @@ int eliminateLine(){
 int lost(){
   int i;
   for (i=0;i<X;i++){
-    if (screen[3][i]=='#'){
+    if (screen[3][i]){
       return 1;
     }
   }
@@ -47,17 +71,18 @@ int lost(){
 
 void printScore(int score, int level, char next[4][4]){
   int i,e;
-  wclear(score_win);
-  wprintw(score_win, "Level: %d\n", level);
-  wprintw(score_win, "Score: %d\n\n", score);
-  wprintw(score_win, "Next element:\n\n");
-  for (i=0;i<4;i++){
-    wprintw(score_win, "   ");
-    for (e=0;e<4;e++)
-        wprintw(score_win, "%c%c", next[i][e], next[i][e]);
-    wprintw(score_win, "\n");
+  mvwprintw(score_win, 0, 0, "Level: %d          ", level);
+  mvwprintw(score_win, 1, 0, "Score: %d          ", score);
+  mvwprintw(score_win, 3, 0, "Next element:      ");
+  for (i = 0; i < 4; i++) {
+    for (e = 0; e < 4; e++) {
+      wattron(score_win, COLOR_PAIR(next[i][e]));
+      mvwaddch(score_win, 5+i, 3+e*2, next[i][e] ? block : ' ');
+      mvwaddch(score_win, 5+i, 4+e*2, next[i][e] ? block : ' ');
+      wattroff(score_win, COLOR_PAIR(next[i][e]));
+    }
   }
-  wprintw(score_win, COMANDI);
+  mvwprintw(score_win, 8, 0, COMANDI);
   wrefresh(score_win);
 }
 
@@ -67,7 +92,7 @@ int newGame(){
   char c;
   nodelay(stdscr, FALSE);
   wclear(score_win);
-  wprintw(score_win,"Giovare un'altra partita(y/n)?");
+  wprintw(score_win,"Giovare un'altra partita ? (y/n)");
   wrefresh(score_win);
   while ((c = getch())){
     if (c=='y'){
@@ -95,13 +120,23 @@ void initCurses(){
   nodelay(stdscr, TRUE); /* input senza delay */
   noecho();              /* non stampare il carattere a video */
   curs_set(0);           /* non mostrare il cursore */
-
   refresh();
 
+  use_default_colors();
+  start_color();
+
+  init_pair(1, COLOR_CYAN, -1);
+  init_pair(2, COLOR_YELLOW, -1);
+  init_pair(3, 203, -1);
+  init_pair(4, COLOR_BLUE, -1);
+  init_pair(5, COLOR_MAGENTA, -1);
+  init_pair(6, COLOR_GREEN, -1);
+  init_pair(7, COLOR_RED, -1);
+
+  refresh();
   /* stampa il titolo */
   title = newwin(TITLE_W_SIZE_Y,TITLE_W_SIZE_X,TITLE_W_START_Y,TITLE_W_START_X);
-  wprintw(title, TITLE);
-  wrefresh(title);
+  print_title(TITLE);
 
   /* finestra contenitore per il gioco */
   game_o = newwin(GAME_O_W_SIZE_Y, GAME_O_W_SIZE_X, GAME_O_W_START_Y, GAME_O_W_START_X);

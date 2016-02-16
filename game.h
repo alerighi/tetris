@@ -4,7 +4,10 @@
 #include "screen.h"
 
 typedef struct pezzo_s {
-  int p,r,y,x;
+  int p;
+  int r;
+  int y;
+  int x;
 } pezzo_t;
 
 typedef struct game_s {
@@ -25,5 +28,7 @@ int move_down(pezzo_t *p);
 void rotate(pezzo_t *p);
 void pezzoRand(pezzo_t *p);
 void getElement(pezzo_t *p, char str[4][4]);
+
+extern char screen[Y][X];
 
 #endif /* GAME_H */

@@ -54,6 +54,7 @@ int main(int argc, char *argv[]){
           usleep(100000);
         break;
       case 'r':
+        memset(screen, 0, sizeof(screen));
         game_o = start_new_game();
         break;
     }
@@ -72,7 +73,7 @@ int main(int argc, char *argv[]){
            game_o.score += i*10;
            count=0;
       }
-      if (!(game_o.score%((int)pow(game_o.level+3,2))))
+      if (game_o.score%100==0)
         game_o.level++;
       if (lost()){
         if (newGame()){

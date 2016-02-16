@@ -1,5 +1,7 @@
 #include "game.h"
 
+int color = 1;
+
 const char tetris[7][4][4][4] = {
   { // I
     {"****"},
@@ -47,7 +49,6 @@ const char tetris[7][4][4][4] = {
 
 game_t start_new_game(){
   game_t game;
-  init();
   game.score=0;
   game.level=1;
   pezzoRand(&game.p_cur);
@@ -67,7 +68,7 @@ void add(pezzo_t *p){
     for (i=0; i<4; i++){
       for (e=0; e<4; e++){
         if (tetris[p->p][p->r][i][e]=='*')
-          screen[p->y-i][p->x+e]='#';
+          screen[p->y-i][p->x+e]=p->p+1;
       }
     }
 }
@@ -77,7 +78,7 @@ void rem(pezzo_t *p){
     for (i=0; i<4; i++){
       for (e=0; e<4; e++){
         if (tetris[p->p][p->r][i][e]=='*')
-          screen[p->y-i][p->x+e]=' ';
+          screen[p->y-i][p->x+e]=0;
       }
     }
 }
@@ -87,7 +88,7 @@ int check(pezzo_t *p){
     for (i=0; i<4; i++){
       for (e=0; e<4; e++){
         if (tetris[p->p][p->r][i][e]=='*' &&
-          ((p->y-i)>=Y || (p->y-i)<0 || (p->x+e)>=X || (p->x+e)<0 || screen[p->y-i][p->x+e]=='#')){
+          ((p->y-i)>=Y || (p->y-i)<0 || (p->x+e)>=X || (p->x+e)<0 || screen[p->y-i][p->x+e])){
           return 0;
         }
       }
@@ -100,9 +101,9 @@ void getElement(pezzo_t *p, char str[4][4]){
   for (i=0;i<4;i++)
     for (e=0;e<4;e++){
       if (tetris[p->p][p->r][i][e]=='*')
-        str[i][e]='#';
+        str[i][e]=p->p+1;
       else
-        str[i][e]=' ';
+        str[i][e]=0;
     }
 }
 
