@@ -20,9 +20,10 @@
               "  11    22        33    44   44   55      66\n"\
               "  11    222222    33    44    44  55  666666\n"
 
-#define COMANDI "\nfrecce: muovi"\
-                "\np: pause"\
-                "\nr: restart"
+#define COMANDI "\nControls: "\
+                "\n   arrows: move"\
+                "\n   p: pause"\
+                "\n   r: restart"
 
 #define TITLE_W_START_X CENTER-TITLE_CHARS/2-5
 #define TITLE_W_START_Y 1
@@ -44,12 +45,14 @@
 #define SCORE_W_SIZE_X COLS-(SCORE_W_START_X)
 #define SCORE_W_SIZE_Y GAME_W_SIZE_Y-4
 
-void printMatrix();
-int eliminateLine();
+extern char screen[Y][X];
+
+void print_matrix();
+int eliminate_line();
 int lost();
-void printScore(int score, int level, char next[4][4]);
-int newGame();
-void initCurses();
+void print_score(int score, int level, char next[4][4]);
+int new_game();
+void init_curses();
 void quit();
 
 #endif /* SCREEN_H */

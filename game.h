@@ -10,25 +10,15 @@ typedef struct pezzo_s {
   int x;
 } pezzo_t;
 
-typedef struct game_s {
-  int score;
-  int level;
-  pezzo_t p_cur;
-  pezzo_t p_next;
-} game_t;
 
-
-game_t start_new_game();
+int check(pezzo_t *p);
+int move_down(pezzo_t *p);
 void add(pezzo_t *p);
 void rem(pezzo_t *p);
-int check(pezzo_t *p);
 void move_left(pezzo_t *p);
 void move_right(pezzo_t *p);
-int move_down(pezzo_t *p);
 void rotate(pezzo_t *p);
-void pezzoRand(pezzo_t *p);
-void getElement(pezzo_t *p, char str[4][4]);
-
-extern char screen[Y][X];
+void pezzo_rand(pezzo_t *p);
+void get_element(pezzo_t *p, char str[4][4]);
 
 #endif /* GAME_H */

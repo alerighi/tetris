@@ -15,38 +15,40 @@
 
 
 int main(int argc, char *argv[]){
-  int c;
   int i;
   int count=0;
   int bottom=0;
+  int level = 1;
+  int score = 0;
+  pezzo_t pezzo_corrente;
+  pezzo_t pezzo_prossimo;
 
-  game_t game_o;
+  pezzo_rand(&pezzo_corrente);
+  pezzo_rand(&pezzo_prossimo);
 
   char next[4][4];
 
   srand(time(NULL));
 
   /* init ncurses */
-  initCurses();
+  init_curses();
 
   /* main loop */
 
-  game_o = start_new_game();
-
-  add (&game_o.p_cur);
-  while ((c = getch())){
-    switch (c){
+  add (&pezzo_corrente);
+  while (true){
+    switch (getch()){
       case KEY_LEFT:
-        move_left(&game_o.p_cur);
+        move_left(&pezzo_corrente);
         break;
       case KEY_RIGHT:
-        move_right(&game_o.p_cur);
+        move_right(&pezzo_corrente);
         break;
       case KEY_UP:
-        rotate(&game_o.p_cur);
+        rotate(&pezzo_corrente);
         break;
       case KEY_DOWN:
-        while (!move_down(&game_o.p_cur));
+        while (!move_down(&pezzo_corrente));
         bottom=1;
         break;
       case 'p': /* pause */
@@ -55,43 +57,49 @@ int main(int argc, char *argv[]){
         break;
       case 'r':
         memset(screen, 0, sizeof(screen));
-        game_o = start_new_game();
+        pezzo_rand(&pezzo_corrente);
+        pezzo_rand(&pezzo_prossimo);
+        score = 0;
+        level = 1;
         break;
     }
 
     count++;
-    if (count>=150-pow(game_o.level,2)){
+    if (count>=150-pow(level,2)){
       count=0;
-      bottom = move_down(&game_o.p_cur);
+      bottom = move_down(&pezzo_corrente);
     }
 
     if (bottom){
       bottom=0;
-      game_o.score++;
-      pezzoRand(&game_o.p_cur);
-      if ((i=eliminateLine())){
-           game_o.score += i*10;
+      score++;
+      pezzo_rand(&pezzo_corrente);
+      if ((i=eliminate_line())){
+           score += i*14;
            count=0;
       }
-      if (game_o.score%100==0)
-        game_o.level++;
+      if (score%100==0)
+        level++;
       if (lost()){
-        if (newGame()){
+        if (new_game()){
           memset(screen, 0, sizeof(screen));
-          game_o = start_new_game();
+          pezzo_rand(&pezzo_corrente);
+          pezzo_rand(&pezzo_prossimo);
+          score = 0;
+          level = 1;
         } else {
           quit();
         }
       }
-      memcpy(&game_o.p_cur, &game_o.p_next, sizeof(pezzo_t));
-      pezzoRand(&game_o.p_next);
-      add(&game_o.p_cur);
+      memcpy(&pezzo_corrente, &pezzo_prossimo, sizeof(pezzo_t));
+      pezzo_rand(&pezzo_prossimo);
+      add(&pezzo_corrente);
     }
     usleep(2000);
-    getElement(&game_o.p_next, next);
-    printScore(game_o.score, game_o.level, next);
+    get_element(&pezzo_prossimo, next);
+    print_score(score, level, next);
 
-    printMatrix();
+    print_matrix();
   }
 
   return 0;

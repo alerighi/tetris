@@ -23,7 +23,7 @@ void print_title(char *str) {
   wrefresh(title);
 }
 
-void printMatrix(){
+void print_matrix(){
   int y, x;
   for (y = 0; y < Y; y++) {
     for (x = 0; x < X; x++) {
@@ -41,7 +41,7 @@ void printMatrix(){
   wrefresh(game);
 }
 
-int eliminateLine(){
+int eliminate_line(){
   int i,j,e,ret=0;
   for (i=0;i<Y;i++){
     for (j=0;j<X;j++)
@@ -69,7 +69,7 @@ int lost(){
   return 0;
 }
 
-void printScore(int score, int level, char next[4][4]){
+void print_score(int score, int level, char next[4][4]){
   int i,e;
   mvwprintw(score_win, 0, 0, "Level: %d          ", level);
   mvwprintw(score_win, 1, 0, "Score: %d          ", score);
@@ -87,7 +87,7 @@ void printScore(int score, int level, char next[4][4]){
 }
 
 
-int newGame(){
+int new_game(){
   int ret=0;
   char c;
   nodelay(stdscr, FALSE);
@@ -113,7 +113,7 @@ void quit(){
   exit(0);
 }
 
-void initCurses(){
+void init_curses(){
   initscr();             /* inizzializza lo schermo */
   cbreak();              /* input senza buffer */
   keypad(stdscr, TRUE);  /* tasti freccia, ecc */

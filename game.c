@@ -1,7 +1,5 @@
 #include "game.h"
 
-int color = 1;
-
 const char tetris[7][4][4][4] = {
   { // I
     {"****"},
@@ -47,16 +45,7 @@ const char tetris[7][4][4][4] = {
   }
 };
 
-game_t start_new_game(){
-  game_t game;
-  game.score=0;
-  game.level=1;
-  pezzoRand(&game.p_cur);
-  pezzoRand(&game.p_next);
-  return game;
-}
-
-void pezzoRand(pezzo_t* p){
+void pezzo_rand(pezzo_t* p){
   p->x=4;
   p->y=3;
   p->p=random()%7;
@@ -96,7 +85,7 @@ int check(pezzo_t *p){
     return 1;
 }
 
-void getElement(pezzo_t *p, char str[4][4]){
+void get_element(pezzo_t *p, char str[4][4]){
   int i,e;
   for (i=0;i<4;i++)
     for (e=0;e<4;e++){
