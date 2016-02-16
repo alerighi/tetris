@@ -7,13 +7,13 @@
 /* window positioning stuff */
 #define CENTER COLS/2
 
-#define TITLE_CHARS 45
+#define TITLE_CHARS 44
 #define TITLE_LINES 5
-#define TITLE "111111  222222  333333  4444444   55  666666\n"\
-              "  11    22        33    44   44   55  66    \n"\
-              "  11    22222     33    444444    55  666666\n"\
-              "  11    22        33    44   44   55      66\n"\
-              "  11    222222    33    44    44  55  666666\n"
+#define TITLE "111111  222222  333333  4444444  55  666666\n"\
+              "  11    22        33    44   44  55  66    \n"\
+              "  11    22222     33    444444   55  666666\n"\
+              "  11    22        33    44   44  55      66\n"\
+              "  11    222222    33    44    44 55  666666\n"
 
 #define COMANDI "\nControls:                   "\
                 "\n   arrows: move             "\
@@ -42,12 +42,12 @@
 
 extern char screen[Y][X];
 
-void print_matrix();
-int eliminate_line();
-int lost();
+void print_matrix(void);
+int eliminate_line(void);
+int lost(void);
 void print_score(int score, int level, char next[4][4]);
-int new_game();
-void init_curses();
+int new_game(void);
+void init_curses(void);
 void quit();
 
 #endif /* SCREEN_H */

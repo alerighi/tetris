@@ -10,7 +10,7 @@ static WINDOW *score_win;
 static WINDOW *title;
 
 char screen[Y][X];
-chtype block = ' ' | A_REVERSE;
+static chtype block = ' ' | A_REVERSE;
 
 
 void print_title(char *str) {
@@ -18,9 +18,9 @@ void print_title(char *str) {
   for (i = 0; i < (int)strlen(str); i++) {
     if (str[i] == '\n')  waddch(title, '\n');
     else if (str[i] != ' ') {
-       wattron(title, COLOR_PAIR(str[i]-48));
-       waddch(title, block);
-       wattroff(title, COLOR_PAIR(str[i]-48));
+      wattron(title, COLOR_PAIR(str[i]-48));
+      waddch(title, block);
+      wattroff(title, COLOR_PAIR(str[i]-48));
     }
     else waddch(title, ' ');
   }
@@ -49,16 +49,16 @@ int eliminate_line(){
   int i,j,e,ret=0;
   for (i=0;i<Y;i++){
     for (j=0;j<X;j++)
-      if (!screen[i][j])
-          break;
+    if (!screen[i][j])
+    break;
 
     /* se il ciclo termina completamente allora elimino la riga */
     if (j==X){ /* trovata linea */
       for (j=i;j>2;j--)
-        for (e=0;e<X;e++)
-          screen[j][e]=screen[j-1][e];
+      for (e=0;e<X;e++)
+      screen[j][e]=screen[j-1][e];
       ret++;
-      }
+    }
   }
   return ret;
 }
@@ -127,11 +127,11 @@ void init_curses(){
   refresh();
 
   if ((GAME_O_W_SIZE_Y+TITLE_W_SIZE_Y) > LINES ||
-      (GAME_O_W_SIZE_X+30) > COLS) {
-      endwin();
-      printf("Your terminal is too small. Please, resize your terminal !\n");
-      exit(1);
-    }
+  (GAME_O_W_SIZE_X+30) > COLS) {
+    endwin();
+    printf("Your terminal is too small. Please, resize your terminal !\n");
+    exit(1);
+  }
 
   use_default_colors();
   start_color();

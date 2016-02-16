@@ -14,11 +14,6 @@
 #include "game.h"
 #include "screen.h"
 
-void handle_break() {
-  endwin();
-  exit(0);
-}
-
 int main(void){
   int i;
   int count=0;
@@ -33,7 +28,7 @@ int main(void){
 
   char next[4][4];
 
-  signal(SIGINT, handle_break);
+  signal(SIGINT, quit);
   srand(time(NULL));
 
   /* init ncurses */
@@ -56,10 +51,10 @@ int main(void){
       case KEY_DOWN:
         while (!move_down(&pezzo_corrente));
         bottom=1;
-        break;
-      case 'p': /* pause */
+      break;
+        case 'p': /* pause */
         while (getch()!='p')
-          usleep(100000);
+        usleep(100000);
         break;
       case 'r':
         memset(screen, 0, sizeof(screen));
@@ -81,8 +76,8 @@ int main(void){
       score++;
       pezzo_rand(&pezzo_corrente);
       if ((i=eliminate_line())){
-           score += i*14;
-           count=0;
+        score += i*14;
+        count=0;
       }
       level = 1 + score / 50;
       if (lost()){

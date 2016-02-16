@@ -3,7 +3,7 @@
 #include "game.h"
 #include "screen.h"
 
-const char tetris[7][4][4][4] = {
+static const char tetris[7][4][4][4] = {
   { // I
     {"****"},
     {"*","*","*","*"},
@@ -56,47 +56,47 @@ void pezzo_rand(pezzo_t* p){
 }
 
 void add(pezzo_t *p){
-    int i,e;
-    for (i=0; i<4; i++){
-      for (e=0; e<4; e++){
-        if (tetris[p->p][p->r][i][e]=='*')
-          screen[p->y-i][p->x+e]=p->p+1;
-      }
+  int i,e;
+  for (i=0; i<4; i++){
+    for (e=0; e<4; e++){
+      if (tetris[p->p][p->r][i][e]=='*')
+      screen[p->y-i][p->x+e]=p->p+1;
     }
+  }
 }
 
 void rem(pezzo_t *p){
-    int i,e;
-    for (i=0; i<4; i++){
-      for (e=0; e<4; e++){
-        if (tetris[p->p][p->r][i][e]=='*')
-          screen[p->y-i][p->x+e]=0;
-      }
+  int i,e;
+  for (i=0; i<4; i++){
+    for (e=0; e<4; e++){
+      if (tetris[p->p][p->r][i][e]=='*')
+      screen[p->y-i][p->x+e]=0;
     }
+  }
 }
 
 int check(pezzo_t *p){
-    int i,e;
-    for (i=0; i<4; i++){
-      for (e=0; e<4; e++){
-        if (tetris[p->p][p->r][i][e]=='*' &&
-          ((p->y-i)>=Y || (p->y-i)<0 || (p->x+e)>=X || (p->x+e)<0 || screen[p->y-i][p->x+e])){
-          return 0;
-        }
+  int i,e;
+  for (i=0; i<4; i++){
+    for (e=0; e<4; e++){
+      if (tetris[p->p][p->r][i][e]=='*' &&
+      ((p->y-i)>=Y || (p->y-i)<0 || (p->x+e)>=X || (p->x+e)<0 || screen[p->y-i][p->x+e])){
+        return 0;
       }
     }
-    return 1;
+  }
+  return 1;
 }
 
 void get_element(pezzo_t *p, char str[4][4]){
   int i,e;
   for (i=0;i<4;i++)
-    for (e=0;e<4;e++){
-      if (tetris[p->p][p->r][i][e]=='*')
-        str[i][e]=p->p+1;
-      else
-        str[i][e]=0;
-    }
+  for (e=0;e<4;e++){
+    if (tetris[p->p][p->r][i][e]=='*')
+    str[i][e]=p->p+1;
+    else
+    str[i][e]=0;
+  }
 }
 
 
@@ -104,7 +104,7 @@ void move_left(pezzo_t *p){
   rem(p);
   p->x--;
   if (!check(p))
-    p->x++;
+  p->x++;
   add(p);
 }
 
@@ -112,7 +112,7 @@ void move_right(pezzo_t *p){
   rem(p);
   p->x++;
   if (!check(p))
-    p->x--;
+  p->x--;
   add(p);
 }
 
