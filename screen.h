@@ -1,11 +1,6 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include <curses.h>
-#include <stdlib.h>
-#include <string.h>
-
-
 #define Y 22
 #define X 10
 

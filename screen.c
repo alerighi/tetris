@@ -1,3 +1,7 @@
+#include <curses.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "screen.h"
 
 static WINDOW *game;
@@ -11,7 +15,7 @@ chtype block = ' ' | A_REVERSE;
 
 void print_title(char *str) {
   int i;
-  for (i = 0; i < strlen(str); i++) {
+  for (i = 0; i < (int)strlen(str); i++) {
     if (str[i] == '\n')  waddch(title, '\n');
     else if (str[i] != ' ') {
        wattron(title, COLOR_PAIR(str[i]-48));
@@ -121,6 +125,13 @@ void init_curses(){
   noecho();              /* non stampare il carattere a video */
   curs_set(0);           /* non mostrare il cursore */
   refresh();
+
+  if ((GAME_O_W_SIZE_Y+TITLE_W_SIZE_Y) > LINES ||
+      (GAME_O_W_SIZE_X+30) > COLS) {
+      endwin();
+      printf("Your terminal is too small. Please, resize your terminal !\n");
+      exit(1);
+    }
 
   use_default_colors();
   start_color();

@@ -1,8 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "screen.h"
-
 typedef struct pezzo_s {
   int p;
   int r;

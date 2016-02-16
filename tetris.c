@@ -1,20 +1,25 @@
 /*
- * Programma in c che implementa il gioco del tetris
- * di Alessandro Righi
+ * Simple tetris game built using ncurses library
+ * (c) 2016 Alessandro Righi
+ * You are free to use this program under the terms of the BSD licence
  */
 
-/* TODO: - realizzare struttura gioco
- *       - sistemare il codice
- *       - sistemare file e aggiungere funzioni
- *       - pezzi del tetris colorati
- *       - bugfix vari
- *       - commenti !!!
- */
+#include <stdlib.h>
+#include <curses.h>
+#include <unistd.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
 
-#include "tetris.h"
+#include "game.h"
+#include "screen.h"
 
+void handle_break() {
+  endwin();
+  exit(0);
+}
 
-int main(int argc, char *argv[]){
+int main(void){
   int i;
   int count=0;
   int bottom=0;
@@ -28,6 +33,7 @@ int main(int argc, char *argv[]){
 
   char next[4][4];
 
+  signal(SIGINT, handle_break);
   srand(time(NULL));
 
   /* init ncurses */
@@ -78,7 +84,7 @@ int main(int argc, char *argv[]){
            score += i*14;
            count=0;
       }
-      level = score / 50;
+      level = 1 + score / 50;
       if (lost()){
         if (new_game()){
           memset(screen, 0, sizeof(screen));
@@ -100,6 +106,5 @@ int main(int argc, char *argv[]){
 
     print_matrix();
   }
-
   return 0;
 }
