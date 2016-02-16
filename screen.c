@@ -73,7 +73,7 @@ void print_score(int score, int level, char next[4][4]){
   int i,e;
   mvwprintw(score_win, 0, 0, "Level: %d          ", level);
   mvwprintw(score_win, 1, 0, "Score: %d          ", score);
-  mvwprintw(score_win, 3, 0, "Next element:      ");
+  mvwprintw(score_win, 3, 0, "Next piece:      ");
   for (i = 0; i < 4; i++) {
     for (e = 0; e < 4; e++) {
       wattron(score_win, COLOR_PAIR(next[i][e]));
@@ -92,7 +92,7 @@ int new_game(){
   char c;
   nodelay(stdscr, FALSE);
   wclear(score_win);
-  wprintw(score_win,"Giovare un'altra partita ? (y/n)");
+  wprintw(score_win,"Start another game ? (y/n)");
   wrefresh(score_win);
   while ((c = getch())){
     if (c=='y'){
