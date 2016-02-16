@@ -1,5 +1,7 @@
-# tetris
+# Tetris
 
-Programma che implementa il gioco del tetrisi in una shell a riga di comando usando le librerie ncurses
+Simple C tetris game built using ncurses library
 
-Provo a modificare e vediamo cosa accade
+&copy; 2016 Alessandro Righi
+
+You are free to use this program under the terms of the BSD licence

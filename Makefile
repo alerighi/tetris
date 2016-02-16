@@ -7,7 +7,7 @@ HEADERS=screen.h game.h
 .PHONY : all run clean rebuild
 
 %.o: %.c $(HEADERS)
-	@echo "Compiling: $<"
+	@echo "Compiling $<"
 	@$(CC) -c -o $@ $< $(CFLAGS)
 
 $(BINNAME): $(OBJ)
@@ -29,7 +29,7 @@ rebuild: clean $(BINNAME)
 
 help:
 	@echo "Tetris version 1.0"
-	@echo "To compile the program type \'make\'"
-	@echo "To run the program type \'./tetris\' or type \'make run\'"
-	@echo "To clean the sources eliminating all the binary file type \'make clean\'"
-	@echo "To completly rebuild the program type \'make rebuild\'"
+	@echo "To compile the program type 'make'"
+	@echo "To run the program type './$(BINNAME)' or type 'make run'"
+	@echo "To clean the sources eliminating all the binary file type 'make clean'"
+	@echo "To completly rebuild the program type 'make rebuild'"
