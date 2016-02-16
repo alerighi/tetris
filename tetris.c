@@ -78,8 +78,7 @@ int main(int argc, char *argv[]){
            score += i*14;
            count=0;
       }
-      if (score%100==0)
-        level++;
+      level = score / 50;
       if (lost()){
         if (new_game()){
           memset(screen, 0, sizeof(screen));
