@@ -33,4 +33,6 @@ help:
 	@echo "To run the program type './$(BINNAME)' or type 'make run'"
 	@echo "To clean the sources eliminating all the binary file type 'make clean'"
 	@echo "To completly rebuild the program type 'make rebuild'"
-	
+	@echo "To get addictional help about the program type 'make man'"
+man:
+	man ./$(BINNAME).6

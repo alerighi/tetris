@@ -10,19 +10,34 @@ static WINDOW *score_win;
 static WINDOW *title;
 
 char screen[Y][X];
-static chtype block = ' ' | A_REVERSE;
+static const chtype BLOCK = ' ' | A_REVERSE;
+
+static const char *TITLE  =
+  "111111  222222  333333  4444444  55  666666\n"
+  "  11    22        33    44   44  55  66    \n"
+  "  11    22222     33    444444   55  666666\n"
+  "  11    22        33    44   44  55      66\n"
+  "  11    222222    33    44    44 55  666666\n";
+
+static const char *COMANDI =
+  "\nControls:                   "
+  "\n   arrows: move             "
+  "\n   p: pause                 "
+  "\n   r: restart               ";
 
 
-void print_title(char *str) {
+void print_title() {
   int i;
-  for (i = 0; i < (int)strlen(str); i++) {
-    if (str[i] == '\n')  waddch(title, '\n');
-    else if (str[i] != ' ') {
-      wattron(title, COLOR_PAIR(str[i]-48));
-      waddch(title, block);
-      wattroff(title, COLOR_PAIR(str[i]-48));
+  for (i = 0; i < (int)strlen(TITLE); i++) {
+    if (TITLE[i] == '\n') {
+      waddch(title, '\n');
+    } else if (TITLE[i] != ' ') {
+      wattron(title, COLOR_PAIR(TITLE[i]-48));
+      waddch(title, BLOCK);
+      wattroff(title, COLOR_PAIR(TITLE[i]-48));
+    } else {
+      waddch(title, ' ');
     }
-    else waddch(title, ' ');
   }
   wrefresh(title);
 }
@@ -33,8 +48,8 @@ void print_matrix(){
     for (x = 0; x < X; x++) {
       if (screen[y][x]) {
         wattron(game, COLOR_PAIR(screen[y][x]));
-        mvwaddch(game, y, x*2, block);
-        mvwaddch(game, y, 1+x*2, block);
+        mvwaddch(game, y, x*2, BLOCK);
+        mvwaddch(game, y, 1+x*2, BLOCK);
         wattroff(game, COLOR_PAIR(screen[y][x]));
       } else {
         mvwaddch(game, y, x*2, ' ');
@@ -81,8 +96,8 @@ void print_score(int score, int level, char next[4][4]){
   for (i = 0; i < 4; i++) {
     for (e = 0; e < 4; e++) {
       wattron(score_win, COLOR_PAIR(next[i][e]));
-      mvwaddch(score_win, 5+i, 3+e*2, next[i][e] ? block : ' ');
-      mvwaddch(score_win, 5+i, 4+e*2, next[i][e] ? block : ' ');
+      mvwaddch(score_win, 5+i, 3+e*2, next[i][e] ? BLOCK : ' ');
+      mvwaddch(score_win, 5+i, 4+e*2, next[i][e] ? BLOCK : ' ');
       wattroff(score_win, COLOR_PAIR(next[i][e]));
     }
   }
@@ -147,7 +162,7 @@ void init_curses(){
   refresh();
   /* stampa il titolo */
   title = newwin(TITLE_W_SIZE_Y,TITLE_W_SIZE_X,TITLE_W_START_Y,TITLE_W_START_X);
-  print_title(TITLE);
+  print_title();
 
   /* finestra contenitore per il gioco */
   game_o = newwin(GAME_O_W_SIZE_Y, GAME_O_W_SIZE_X, GAME_O_W_START_Y, GAME_O_W_START_X);

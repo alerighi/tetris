@@ -9,16 +9,6 @@
 
 #define TITLE_CHARS 44
 #define TITLE_LINES 5
-#define TITLE "111111  222222  333333  4444444  55  666666\n"\
-              "  11    22        33    44   44  55  66    \n"\
-              "  11    22222     33    444444   55  666666\n"\
-              "  11    22        33    44   44  55      66\n"\
-              "  11    222222    33    44    44 55  666666\n"
-
-#define COMANDI "\nControls:                   "\
-                "\n   arrows: move             "\
-                "\n   p: pause                 "\
-                "\n   r: restart               "
 
 #define TITLE_W_START_X CENTER-TITLE_CHARS/2-5
 #define TITLE_W_START_Y 1
