@@ -1,22 +1,19 @@
 #ifndef GAME_H
 #define GAME_H
 
-typedef struct pezzo_s {
-  int p;
-  int r;
-  int y;
-  int x;
-} pezzo_t;
+extern int level;
+extern int score;
 
 
-int check(pezzo_t *p);
-int move_down(pezzo_t *p);
-void add(pezzo_t *p);
-void rem(pezzo_t *p);
-void move_left(pezzo_t *p);
-void move_right(pezzo_t *p);
-void rotate(pezzo_t *p);
-void pezzo_rand(pezzo_t *p);
-void get_element(pezzo_t *p, char str[4][4]);
+static  int check(void);
+int move_down(void);
+static void add(void);
+static void rem(void);
+void move_left(void);
+void move_right(void);
+void rotate(void);
+void get_next(char str[4][4]);
+void start_new_game(void);
+void swap_pieces(void);
 
 #endif /* GAME_H */

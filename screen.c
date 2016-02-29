@@ -3,6 +3,35 @@
 #include <string.h>
 
 #include "screen.h"
+#include "game.h"
+
+#ifndef BLOCK
+# define BLOCK (' ' | A_REVERSE)
+#endif
+
+/* window positioning stuff */
+#define CENTER COLS/2
+
+#define TITLE_W_SIZE_X 44
+#define TITLE_W_SIZE_Y 5
+#define TITLE_W_START_X CENTER-TITLE_W_SIZE_X/2-5
+#define TITLE_W_START_Y 1
+
+#define GAME_W_START_X CENTER-X*2
+#define GAME_W_START_Y TITLE_W_SIZE_Y+3
+#define GAME_W_SIZE_X X*2
+#define GAME_W_SIZE_Y Y
+
+#define GAME_O_W_START_X GAME_W_START_X-1
+#define GAME_O_W_START_Y GAME_W_START_Y-1
+#define GAME_O_W_SIZE_X GAME_W_SIZE_X+2
+#define GAME_O_W_SIZE_Y GAME_W_SIZE_Y+2
+
+#define SCORE_W_START_X GAME_W_START_X+GAME_W_SIZE_X+3
+#define SCORE_W_START_Y GAME_W_START_Y
+#define SCORE_W_SIZE_X COLS-(SCORE_W_START_X)
+#define SCORE_W_SIZE_Y GAME_W_SIZE_Y-4
+
 
 static WINDOW *game;
 static WINDOW *game_o;
@@ -10,7 +39,6 @@ static WINDOW *score_win;
 static WINDOW *title;
 
 char screen[Y][X];
-static const chtype BLOCK = ' ' | A_REVERSE;
 
 static const char *TITLE  =
   "111111  222222  333333  4444444  55  666666\n"
@@ -19,14 +47,23 @@ static const char *TITLE  =
   "  11    22        33    44   44  55      66\n"
   "  11    222222    33    44    44 55  666666\n";
 
+
 static const char *COMANDI =
   "\nControls:                   "
   "\n   arrows: move             "
   "\n   p: pause                 "
   "\n   r: restart               ";
 
+static void print_matrix(void);
+static void print_score();
+static void print_title();
 
-void print_title() {
+void refresh_screen(void) {
+  print_score();
+  print_matrix();
+}
+
+static void print_title() {
   int i;
   for (i = 0; i < (int)strlen(TITLE); i++) {
     if (TITLE[i] == '\n') {
@@ -64,8 +101,8 @@ int eliminate_line(){
   int i,j,e,ret=0;
   for (i=0;i<Y;i++){
     for (j=0;j<X;j++)
-    if (!screen[i][j])
-    break;
+      if (!screen[i][j])
+        break;
 
     /* se il ciclo termina completamente allora elimino la riga */
     if (j==X){ /* trovata linea */
@@ -88,8 +125,10 @@ int lost(){
   return 0;
 }
 
-void print_score(int score, int level, char next[4][4]){
+void print_score(){
   int i,e;
+  char next[4][4];
+  get_next(next);
   mvwprintw(score_win, 0, 0, "Level: %d          ", level);
   mvwprintw(score_win, 1, 0, "Score: %d          ", score);
   mvwprintw(score_win, 3, 0, "Next piece:      ");
@@ -106,7 +145,7 @@ void print_score(int score, int level, char next[4][4]){
 }
 
 
-int new_game(){
+int prompt_new_game(){
   int ret=0;
   char c;
   nodelay(stdscr, FALSE);

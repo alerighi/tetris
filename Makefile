@@ -4,7 +4,12 @@ LDFLAGS=-lcurses -lm
 BINNAME=tetris
 OBJ=tetris.o game.o screen.o
 HEADERS=screen.h game.h
-.PHONY : all run clean rebuild
+PREFIX=/usr/local/
+BIN_DIR=$(PREFIX)/bin
+MAN_DIR=$(PREFIX)/share/man/man6
+MAN_PAGE=tetris.6
+
+.PHONY : all run clean rebuild help install uninstall man
 
 %.o: %.c $(HEADERS)
 	@echo "Compiling $<"
@@ -25,14 +30,39 @@ clean:
 	@rm -f *.o
 	@rm -f $(BINNAME)
 
+install_binary: $(BINNAME)
+	@echo "Installing tetris binary"
+	@install -s $(BINNAME) $(BIN_DIR)
+
+install_man: $(MAN_PAGE)
+	@echo "Installing tetris manpage"
+	@install -d $(MAN_DIR)
+	@install $(MAN_PAGE) $(MAN_DIR)
+
+uninstall_binary:
+		@echo "Uninstalling tetris binary"
+		@rm -f $(BIN_DIR)/$(BINNAME)
+
+uninstall_man:
+		@echo "Uninstalling tetris manpage"
+		@rm -f $(MAN_DIR)/$(MAN_PAGE)
+
+
+install: install_binary install_man
+
+uninstall: uninstall_binary uninstall_man
+
+
 rebuild: clean $(BINNAME)
 
 help:
 	@echo "Tetris version 1.0"
-	@echo "To compile the program type 'make'"
-	@echo "To run the program type './$(BINNAME)' or type 'make run'"
+	@echo "To compile the game type 'make'"
+	@echo "To install the game, type 'make install'"
+	@echo "To run the game whitout installing type './$(BINNAME)' or type 'make run'"
 	@echo "To clean the sources eliminating all the binary file type 'make clean'"
 	@echo "To completly rebuild the program type 'make rebuild'"
-	@echo "To get addictional help about the program type 'make man'"
+	@echo "To get addictional help about the program type 'man tetris' or if not installed 'make man'"
+
 man:
 	man ./$(BINNAME).6
