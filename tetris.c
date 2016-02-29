@@ -17,7 +17,7 @@
 #define VERSION "1.0"
 
 static char *HELPMSG =
-  "Usage: %s [-hv] [-c on/off] [-b char]\n"
+  "Usage: %s [-hv]\n"
   "\t -h        : Display this help message\n"
   "\t -v        : Display version information\n";
 
@@ -33,6 +33,8 @@ int main(int argc, char *argv[]){
 
   signal(SIGINT, quit);
   srand(time(NULL));
+
+  /* Command line args parses */
   while ((c = getopt(argc, argv, "hv")) != -1){
     switch(c){
       case 'h':
@@ -46,12 +48,15 @@ int main(int argc, char *argv[]){
         exit(1);
     }
   }
+
   /* init ncurses */
   init_curses();
   start_new_game();
 
   /* main loop */
   while (true){
+
+    /* Gets and processes user input */
     switch (getch()){
       case KEY_LEFT:
         move_left();
@@ -73,24 +78,32 @@ int main(int argc, char *argv[]){
       case 'r':
         start_new_game();
         continue;
-        break;
+      case 'q':
+        quit();
     }
 
+    /* Moves down the piece if time is passed */
     count++;
     if (count>=150-pow(level,2)){
       count=0;
       bottom = move_down();
     }
 
+    /* If the piece reaches bottom */
     if (bottom){
       bottom=0;
       score++;
+      /* Check and eliminate full lines */
       if ((i=eliminate_line())){
-        score += i*14;
+        score += pow(i,2)*7;
         count=0;
       }
+
+      /* Computes level  */
       level = 1 + score / 50;
-      if (lost()){
+
+      /* Checks if the game is lost */
+      if (game_is_lost()){
         if (prompt_new_game()){
           start_new_game();
           continue;
@@ -98,10 +111,14 @@ int main(int argc, char *argv[]){
           quit();
         }
       }
+
+      /* Swaps the current piece whith the next one */
       swap_pieces();
     }
-    usleep(2000);
+
+    /* Refreshes the screen and sleeps 2ms */
     refresh_screen();
+    usleep(2000);
   }
   return 0;
 }

@@ -9,7 +9,7 @@ BIN_DIR=$(PREFIX)/bin
 MAN_DIR=$(PREFIX)/share/man/man6
 MAN_PAGE=tetris.6
 
-.PHONY : all run clean rebuild help install uninstall man
+.PHONY: all run clean rebuild help install uninstall
 
 %.o: %.c $(HEADERS)
 	@echo "Compiling $<"
@@ -56,13 +56,10 @@ uninstall: uninstall_binary uninstall_man
 rebuild: clean $(BINNAME)
 
 help:
-	@echo "Tetris version 1.0"
+	@echo "This is tetris version 1.0"
 	@echo "To compile the game type 'make'"
 	@echo "To install the game, type 'make install'"
 	@echo "To run the game whitout installing type './$(BINNAME)' or type 'make run'"
 	@echo "To clean the sources eliminating all the binary file type 'make clean'"
 	@echo "To completly rebuild the program type 'make rebuild'"
-	@echo "To get addictional help about the program type 'man tetris' or if not installed 'make man'"
-
-man:
-	man ./$(BINNAME).6
+	@echo "To get addictional help about the program type 'man tetris' after installing the game"

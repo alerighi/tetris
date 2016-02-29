@@ -4,11 +4,7 @@
 extern int level;
 extern int score;
 
-
-static  int check(void);
 int move_down(void);
-static void add(void);
-static void rem(void);
 void move_left(void);
 void move_right(void);
 void rotate(void);

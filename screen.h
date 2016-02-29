@@ -11,11 +11,11 @@
 
 extern char screen[Y][X];
 
+int game_is_lost(void);
 int eliminate_line(void);
-int lost(void);
 int prompt_new_game(void);
-void init_curses(void);
 void quit();
+void init_curses(void);
 void refresh_screen(void);
 
 #endif /* SCREEN_H */
