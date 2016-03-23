@@ -1,3 +1,7 @@
+# Makefile for tetris
+# Copyright (c) 2016 - Alessandro Righi - All rights reserved
+# You are free to use and modify this makefile under the terms of the BSD licence
+
 CC=cc
 CFLAGS=-O3 -W
 LDFLAGS=-lcurses -lm
@@ -8,6 +12,8 @@ PREFIX=/usr/local/
 BIN_DIR=$(PREFIX)/bin
 MAN_DIR=$(PREFIX)/share/man/man6
 MAN_PAGE=tetris.6
+RM=rm -f
+INSTALL=install
 
 .PHONY: all run clean rebuild help install uninstall
 
@@ -27,39 +33,37 @@ run: $(BINNAME)
 
 clean:
 	@echo "Cleaning sources"
-	@rm -f *.o
-	@rm -f $(BINNAME)
+	@$(RM) *.o
+	@$(RM) $(BINNAME)
 
 install_binary: $(BINNAME)
-	@echo "Installing tetris binary"
-	@install -s $(BINNAME) $(BIN_DIR)
+	@echo "Installing $(BINNAME) binary"
+	@$(INSTALL) -s $(BINNAME) $(BIN_DIR)
 
 install_man: $(MAN_PAGE)
-	@echo "Installing tetris manpage"
-	@install -d $(MAN_DIR)
-	@install $(MAN_PAGE) $(MAN_DIR)
+	@echo "Installing $(BINNAME) manpage"
+	@$(INSTALL) -d $(MAN_DIR)
+	@$(INSTALL) $(MAN_PAGE) $(MAN_DIR)
 
 uninstall_binary:
-		@echo "Uninstalling tetris binary"
-		@rm -f $(BIN_DIR)/$(BINNAME)
+		@echo "Uninstalling $(BINNAME) binary"
+		@$(RM) $(BIN_DIR)/$(BINNAME)
 
 uninstall_man:
-		@echo "Uninstalling tetris manpage"
-		@rm -f $(MAN_DIR)/$(MAN_PAGE)
-
+		@echo "Uninstalling $(BINNAME) manpage"
+		@$(RM) $(MAN_DIR)/$(MAN_PAGE)
 
 install: install_binary install_man
 
 uninstall: uninstall_binary uninstall_man
 
-
 rebuild: clean $(BINNAME)
 
 help:
-	@echo "This is tetris version 1.0"
+	@echo "This is $(BINNAME), version 1.0"
 	@echo "To compile the game type 'make'"
 	@echo "To install the game, type 'make install'"
 	@echo "To run the game whitout installing type './$(BINNAME)' or type 'make run'"
 	@echo "To clean the sources eliminating all the binary file type 'make clean'"
 	@echo "To completly rebuild the program type 'make rebuild'"
-	@echo "To get addictional help about the program type 'man tetris' after installing the game"
+	@echo "To get addictional help about the program type 'man $(BINNAME)' after installing the game"

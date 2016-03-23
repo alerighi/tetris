@@ -6,9 +6,7 @@
 #include "game.h"
 
 /* Block character definition */
-#ifndef BLOCK
-# define BLOCK (' ' | A_REVERSE)
-#endif
+#define BLOCK (' ' | A_REVERSE)
 
 /* window positioning definitions */
 #define CENTER COLS/2
@@ -33,7 +31,7 @@
 #define SCORE_W_SIZE_X COLS-(SCORE_W_START_X)
 #define SCORE_W_SIZE_Y GAME_W_SIZE_Y-4
 
-/* Winodws definition */
+/* Winodws variables */
 static WINDOW *game_win;
 static WINDOW *game_border_win;
 static WINDOW *score_win;
@@ -135,12 +133,12 @@ void print_score(){
   get_next(next);
   mvwprintw(score_win, 0, 0, "Level: %d          ", level);
   mvwprintw(score_win, 1, 0, "Score: %d          ", score);
-  mvwprintw(score_win, 3, 0, "Next piece:      ");
+  mvwprintw(score_win, 3, 0, "Next piece:        ");
   for (i = 0; i < 4; i++) {
     for (e = 0; e < 4; e++) {
       wattron(score_win, COLOR_PAIR(next[i][e]));
-      mvwaddch(score_win, 5+i, 3+e*2, next[i][e] ? BLOCK : ' ');
-      mvwaddch(score_win, 5+i, 4+e*2, next[i][e] ? BLOCK : ' ');
+      mvwaddch(score_win, 5+2-i, 3+e*2, next[i][e] ? BLOCK : ' ');
+      mvwaddch(score_win, 5+2-i, 4+e*2, next[i][e] ? BLOCK : ' ');
       wattroff(score_win, COLOR_PAIR(next[i][e]));
     }
   }
@@ -148,26 +146,22 @@ void print_score(){
   wrefresh(score_win);
 }
 
-
-int prompt_new_game(){
-  int ret = 0;
+void prompt_new_game(){
   char c;
   nodelay(stdscr, FALSE);
   wclear(score_win);
-  wprintw(score_win,"Start another game ? (y/n)");
+  wprintw(score_win,"Start a new game ? (y/n)");
   wrefresh(score_win);
   while ((c = getch())){
     if (c=='y'){
-      ret=1;
+      nodelay(stdscr, TRUE);
+      start_new_game();
       break;
     }
     if (c=='n'){
-      ret=0;
-      break;
+      quit();
     }
   }
-  nodelay(stdscr, TRUE);
-  return ret;
 }
 
 void quit(){

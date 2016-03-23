@@ -4,43 +4,46 @@
 #include "game.h"
 #include "screen.h"
 
+/* Include the file whit the definitions of the pieces */
 #include "tetris_pieces.h"
 
-typedef struct pezzo_s {
+struct piece_s {
   int p;
   int r;
   int y;
   int x;
-} pezzo_t;
+};
 
-static pezzo_t current_piece;
-static pezzo_t next_piece;
+static struct piece_s current_piece;
+static struct piece_s next_piece;
 
 int level;
 int score;
 
+/* Static functions */
 static int check(void);
-static void pezzo_rand(pezzo_t *p);
+static void rand_piece(struct piece_s *p);
 static void rem(void);
 static void add(void);
 
-static void pezzo_rand(pezzo_t* p){
+/* Functions implementations */
+static void rand_piece(struct piece_s *p){
   p->x=4;
   p->y=3;
-  p->p=random()%7;
+  p->p=rand()%7;
   p->r=0;
 }
 
 void swap_pieces() {
   current_piece = next_piece;
-  pezzo_rand(&next_piece);
+  rand_piece(&next_piece);
   add();
 }
 
 void start_new_game() {
   memset(screen, 0, sizeof(screen));
-  pezzo_rand(&current_piece);
-  pezzo_rand(&next_piece);
+  rand_piece(&current_piece);
+  rand_piece(&next_piece);
   score = 0;
   level = 1;
   add();
@@ -52,7 +55,7 @@ static void add(void){
   for (i=0; i<4; i++){
     for (e=0; e<4; e++){
       if (tetris[current_piece.p][current_piece.r][i][e]=='*')
-      screen[current_piece.y-i][current_piece.x+e]=current_piece.p+1;
+        screen[current_piece.y-i][current_piece.x+e]=current_piece.p+1;
     }
   }
 }
@@ -62,7 +65,7 @@ static void rem(void){
   for (i=0; i<4; i++){
     for (e=0; e<4; e++){
       if (tetris[current_piece.p][current_piece.r][i][e]=='*')
-      screen[current_piece.y-i][current_piece.x+e]=0;
+        screen[current_piece.y-i][current_piece.x+e]=0;
     }
   }
 }
@@ -72,9 +75,10 @@ static int check(void){
   for (i=0; i<4; i++){
     for (e=0; e<4; e++){
       if (tetris[current_piece.p][current_piece.r][i][e]=='*' &&
-      ((current_piece.y-i)>=Y || (current_piece.y-i)<0 || (current_piece.x+e)>=X || (current_piece.x+e)<0 || screen[current_piece.y-i][current_piece.x+e])){
+      ((current_piece.y-i)>=Y || (current_piece.y-i)<0 ||
+       (current_piece.x+e)>=X || (current_piece.x+e)<0 ||
+       screen[current_piece.y-i][current_piece.x+e]))
         return 0;
-      }
     }
   }
   return 1;
@@ -82,12 +86,13 @@ static int check(void){
 
 void get_next(char str[4][4]){
   int i,e;
-  for (i=0;i<4;i++)
-  for (e=0;e<4;e++){
-    if (tetris[next_piece.p][next_piece.r][i][e]=='*')
-    str[i][e]=next_piece.p+1;
-    else
-    str[i][e]=0;
+  for (i=0;i<4;i++) {
+    for (e=0;e<4;e++) {
+      if (tetris[next_piece.p][next_piece.r][i][e]=='*')
+        str[i][e]=next_piece.p+1;
+      else
+        str[i][e]=0;
+    }
   }
 }
 
@@ -96,7 +101,7 @@ void move_left(void){
   rem();
   current_piece.x--;
   if (!check())
-  current_piece.x++;
+    current_piece.x++;
   add();
 }
 
@@ -104,17 +109,19 @@ void move_right(void){
   rem();
   current_piece.x++;
   if (!check())
-  current_piece.x--;
+    current_piece.x--;
   add();
 }
 
 void rotate(void){
   rem();
   current_piece.r++;
-  if (current_piece.r>3)  current_piece.r=0;
+  if (current_piece.r>3)
+    current_piece.r=0;
   if (!check()){
     current_piece.r--;
-    if (current_piece.r<0)  current_piece.r=3;
+    if (current_piece.r<0)
+      current_piece.r=3;
   }
   add();
 }

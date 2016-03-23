@@ -8,6 +8,7 @@
 #include <curses.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
 #include <time.h>
 #include <math.h>
 
@@ -27,8 +28,8 @@ static char *VERSIONMSG =
 
 int main(int argc, char *argv[]){
   int i;
-  int count=0;
-  int bottom=0;
+  int count = 0;
+  int bottom = 0;
   char c;
 
   signal(SIGINT, quit);
@@ -64,21 +65,21 @@ int main(int argc, char *argv[]){
       case KEY_RIGHT:
         move_right();
         break;
-      case KEY_UP:
+      case KEY_UP: /* rotate */
         rotate();
         break;
-      case KEY_DOWN:
+      case KEY_DOWN: /* fast down */
         while (!move_down());
         bottom=1;
         break;
       case 'p': /* pause */
         while (getch()!='p')
-        usleep(100000);
+          usleep(100000);
         break;
-      case 'r':
+      case 'r': /* restart */
         start_new_game();
         continue;
-      case 'q':
+      case 'q': /* quit */
         quit();
     }
 
@@ -93,23 +94,20 @@ int main(int argc, char *argv[]){
     if (bottom){
       bottom=0;
       score++;
+
       /* Check and eliminate full lines */
       if ((i=eliminate_line())){
-        score += pow(i,2)*7;
+        score += pow(i, 2) * 4;
         count=0;
       }
 
-      /* Computes level  */
+      /* Computes level */
       level = 1 + score / 50;
 
       /* Checks if the game is lost */
       if (game_is_lost()){
-        if (prompt_new_game()){
-          start_new_game();
-          continue;
-        } else {
-          quit();
-        }
+        prompt_new_game();
+        continue;
       }
 
       /* Swaps the current piece whith the next one */
@@ -119,6 +117,8 @@ int main(int argc, char *argv[]){
     /* Refreshes the screen and sleeps 2ms */
     refresh_screen();
     usleep(2000);
-  }
+
+  } /* end while(true) */
+
   return 0;
 }
