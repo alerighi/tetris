@@ -3,8 +3,8 @@
 # You are free to use and modify this makefile under the terms of the BSD licence
 
 CC=cc
-CFLAGS=-O3 -W
-LDFLAGS=-lcurses -lm
+CFLAGS:=-O3 -W
+LDFLAGS:=-lcurses -lm
 BINNAME=tetris
 OBJ=tetris.o game.o screen.o
 HEADERS=screen.h game.h
@@ -12,46 +12,57 @@ PREFIX=/usr/local/
 BIN_DIR=$(PREFIX)/bin
 MAN_DIR=$(PREFIX)/share/man/man6
 MAN_PAGE=tetris.6
-RM=rm -f
+RM=rm -rf
 INSTALL=install
+VERSION=1.1.0
+ECHO=/bin/echo
 
 .PHONY: all run clean rebuild help install uninstall
 
 %.o: %.c $(HEADERS)
-	@echo "Compiling $<"
+	@$(ECHO) -n "Compiling $< 	"
 	@$(CC) -c -o $@ $< $(CFLAGS)
+	@$(ECHO) "[ ok ]"
 
 $(BINNAME): $(OBJ)
-	@echo "Linking $(BINNAME)"
+	@$(ECHO) -n "Linking $(BINNAME)		"
 	@$(CC) -o $@ $^ $(LDFLAGS)
+	@$(ECHO) "[ ok ]"
+
 
 all: $(BINNAME)
 
 run: $(BINNAME)
-	@echo "Running $(BINNAME)"
+	@$(ECHO) "Running $(BINNAME)"
 	@./$(BINNAME)
 
 clean:
-	@echo "Cleaning sources"
-	@$(RM) *.o
+	@$(ECHO) -n "Cleaning sources 	"
+	@$(RM) *.o $(BINNAME).dSYM
 	@$(RM) $(BINNAME)
+	@$(ECHO) "[ ok ]"
 
 install_binary: $(BINNAME)
-	@echo "Installing $(BINNAME) binary"
+	@$(ECHO) -n "Installing $(BINNAME) binary 	"
 	@$(INSTALL) -s $(BINNAME) $(BIN_DIR)
+	@$(ECHO) "[ ok ]"
+
 
 install_man: $(MAN_PAGE)
-	@echo "Installing $(BINNAME) manpage"
+	@$(ECHO) -n "Installing $(BINNAME) manpage 	"
 	@$(INSTALL) -d $(MAN_DIR)
 	@$(INSTALL) $(MAN_PAGE) $(MAN_DIR)
+	@$(ECHO) "[ ok ]"
 
 uninstall_binary:
-		@echo "Uninstalling $(BINNAME) binary"
-		@$(RM) $(BIN_DIR)/$(BINNAME)
+	@$(ECHO) -n "Uninstalling $(BINNAME) binary 	"
+	@$(RM) $(BIN_DIR)/$(BINNAME)
+	@$(ECHO) "[ ok ]"
 
 uninstall_man:
-		@echo "Uninstalling $(BINNAME) manpage"
-		@$(RM) $(MAN_DIR)/$(MAN_PAGE)
+	@$(ECHO) -n "Uninstalling $(BINNAME) manpage 	"
+	@$(RM) $(MAN_DIR)/$(MAN_PAGE)
+	@$(ECHO) "[ ok ]"
 
 install: install_binary install_man
 
@@ -60,10 +71,10 @@ uninstall: uninstall_binary uninstall_man
 rebuild: clean $(BINNAME)
 
 help:
-	@echo "This is $(BINNAME), version 1.0"
-	@echo "To compile the game type 'make'"
-	@echo "To install the game, type 'make install'"
-	@echo "To run the game whitout installing type './$(BINNAME)' or type 'make run'"
-	@echo "To clean the sources eliminating all the binary file type 'make clean'"
-	@echo "To completly rebuild the program type 'make rebuild'"
-	@echo "To get addictional help about the program type 'man $(BINNAME)' after installing the game"
+	@$(ECHO) "This is $(BINNAME), version $(VERSION)"
+	@$(ECHO) "To compile the game type 'make'"
+	@$(ECHO) "To install the game, type 'make install'"
+	@$(ECHO) "To run the game whitout installing type './$(BINNAME)' or type 'make run'"
+	@$(ECHO) "To clean the sources eliminating all the binary file type 'make clean'"
+	@$(ECHO) "To completly rebuild the program type 'make rebuild'"
+	@$(ECHO) "To get addictional help about the program type 'man $(BINNAME)' after installing the game"

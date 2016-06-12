@@ -131,9 +131,10 @@ void print_score(){
   int i,e;
   char next[4][4];
   get_next(next);
-  mvwprintw(score_win, 0, 0, "Level: %d          ", level);
-  mvwprintw(score_win, 1, 0, "Score: %d          ", score);
-  mvwprintw(score_win, 3, 0, "Next piece:        ");
+  mvwprintw(score_win, 0, 0, "Level: %d                      ", level);
+  mvwprintw(score_win, 1, 0, "Score: %d                      ", score);
+  mvwprintw(score_win, 2, 0, "High score: %d                 ", high_score);
+  mvwprintw(score_win, 3, 0, "Next piece:                    ");
   for (i = 0; i < 4; i++) {
     for (e = 0; e < 4; e++) {
       wattron(score_win, COLOR_PAIR(next[i][e]));
@@ -150,6 +151,11 @@ void prompt_new_game(){
   char c;
   nodelay(stdscr, FALSE);
   wclear(score_win);
+  wprintw(score_win,"Sorry, you lost :( score %d\n", score);
+  if (score > high_score) {
+    wprintw(score_win,"Congratulations! New record!\n");
+    high_score = score;
+  }
   wprintw(score_win,"Start a new game ? (y/n)");
   wrefresh(score_win);
   while ((c = getch())){
@@ -166,10 +172,46 @@ void prompt_new_game(){
 
 void quit(){
   endwin();
+  save_score();
   exit(0);
 }
 
-void init_curses(){
+void draw_windows(void) {
+  /* stampa il titolo */
+  title_win = newwin(TITLE_W_SIZE_Y,TITLE_W_SIZE_X,TITLE_W_START_Y,TITLE_W_START_X);
+  print_title();
+
+  /* finestra contenitore per il gioco */
+  game_border_win = newwin(GAME_BORDER_W_SIZE_Y, GAME_BORDER_W_SIZE_X, GAME_BORDER_W_START_Y, GAME_BORDER_W_START_X);
+  box(game_border_win, 0, 0);
+  wrefresh(game_border_win);
+
+  /* finestra del gioco */
+  game_win = newwin(GAME_W_SIZE_Y, GAME_W_SIZE_X, GAME_W_START_Y, GAME_W_START_X);
+  wrefresh(game_win);
+
+  /* finestra dei punteggi */
+  score_win = newwin(SCORE_W_SIZE_Y, SCORE_W_SIZE_X, SCORE_W_START_Y, SCORE_W_START_X);
+  wrefresh(score_win);
+
+}
+
+/* cancella tutte le finestre */
+void destroy_windows(void) {
+  delwin(title_win);
+  delwin(game_border_win);
+  delwin(game_win);
+  delwin(score_win);
+  clear();
+  refresh();
+}
+
+void redraw_screen() {
+  destroy_windows();
+  draw_windows();
+}
+
+void init_curses(void){
   initscr();             /* inizzializza lo schermo */
   cbreak();              /* input senza buffer */
   keypad(stdscr, TRUE);  /* tasti freccia, ecc */
@@ -197,20 +239,9 @@ void init_curses(){
   init_pair(7, COLOR_RED, -1);
 
   refresh();
-  /* stampa il titolo */
-  title_win = newwin(TITLE_W_SIZE_Y,TITLE_W_SIZE_X,TITLE_W_START_Y,TITLE_W_START_X);
-  print_title();
 
-  /* finestra contenitore per il gioco */
-  game_border_win = newwin(GAME_BORDER_W_SIZE_Y, GAME_BORDER_W_SIZE_X, GAME_BORDER_W_START_Y, GAME_BORDER_W_START_X);
-  box(game_border_win, 0, 0);
-  wrefresh(game_border_win);
+  draw_windows();
 
-  /* finestra del gioco */
-  game_win = newwin(GAME_W_SIZE_Y, GAME_W_SIZE_X, GAME_W_START_Y, GAME_W_START_X);
-  wrefresh(game_win);
-
-  /* finestra dei punteggi */
-  score_win = newwin(SCORE_W_SIZE_Y, SCORE_W_SIZE_X, SCORE_W_START_Y, SCORE_W_START_X);
-  wrefresh(score_win);
 }
+
+

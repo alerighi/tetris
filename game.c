@@ -1,11 +1,18 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "game.h"
 #include "screen.h"
 
 /* Include the file whit the definitions of the pieces */
 #include "tetris_pieces.h"
+
+const char *score_filename = ".tetris_score";
+
+int level;
+int score;
+int high_score;
 
 struct piece_s {
   int p;
@@ -16,9 +23,6 @@ struct piece_s {
 
 static struct piece_s current_piece;
 static struct piece_s next_piece;
-
-int level;
-int score;
 
 /* Static functions */
 static int check(void);
@@ -136,4 +140,24 @@ int move_down(void){
   }
   add();
   return ret;
+}
+
+void load_score() {
+  char filename[100];
+  sprintf(filename, "%s/%s", getenv("HOME"), score_filename);
+  FILE *score_fp = fopen(filename, "r");
+  if (score_fp) {
+    fscanf(score_fp, "%d", &high_score);
+    fclose(score_fp);
+  } 
+}
+
+void save_score() {
+  char filename[100];
+  sprintf(filename, "%s/%s", getenv("HOME"), score_filename);
+  FILE *score_fp = fopen(filename, "w+");
+  if (score_fp) {
+    fprintf(score_fp, "%d\n", high_score);
+    fclose(score_fp);
+  } 
 }

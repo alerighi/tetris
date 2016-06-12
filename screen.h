@@ -12,5 +12,6 @@ void prompt_new_game(void);
 void quit();
 void init_curses(void);
 void refresh_screen(void);
+void redraw_screen();
 
 #endif /* SCREEN_H */
