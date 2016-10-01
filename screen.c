@@ -155,6 +155,7 @@ void prompt_new_game(){
   if (score > high_score) {
     wprintw(score_win,"Congratulations! New record!\n");
     high_score = score;
+    save_score();
   }
   wprintw(score_win,"Start a new game ? (y/n)");
   wrefresh(score_win);
