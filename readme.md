@@ -1,7 +1,5 @@
 # Tetris
 
-Simple C tetris game built using ncurses library
+Ncurses C tetris game
 
-&copy; 2016 Alessandro Righi
-
-You are free to use this program under the terms of the BSD licence
+Compile with `make` and install with `make install`
