@@ -5,7 +5,7 @@ extern int level;
 extern int score;
 extern int high_score;
 
-int move_down(void);
+int move_down();
 void move_left(void);
 void move_right(void);
 void rotate(void);

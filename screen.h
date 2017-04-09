@@ -13,5 +13,6 @@ void quit();
 void init_curses(void);
 void refresh_screen(void);
 void redraw_screen();
+void input_loop(void);
 
 #endif /* SCREEN_H */

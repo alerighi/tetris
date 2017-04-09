@@ -1,6 +1,6 @@
 # Makefile for tetris
 # Copyright (c) 2016 - Alessandro Righi - All rights reserved
-# You are free to use and modify this makefile under the terms of the BSD licence
+# You are free to use and modify this makefile under the terms of the MIT licence
 
 CC=cc
 CFLAGS:=-O3 -W
