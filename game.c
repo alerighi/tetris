@@ -34,6 +34,8 @@ static void rem(void);
 static void add(void);
 static void set_alarm(void);
 static void cancel_alarm(void);
+static void get_score_filename(char *filename);
+
 
 static void rand_piece(struct piece_s *p)
 {
@@ -137,30 +139,30 @@ void get_next(char str[4][4])
 void move_left(void)
 {
 	rem();
-	current_piece.x--;
+	current_piece.x -= 1;
 	if (!check())
-		current_piece.x++;
+		current_piece.x += 1;
 	add();
 }
 
 void move_right(void)
 {
 	rem();
-	current_piece.x++;
+	current_piece.x += 1;
 	if (!check())
-		current_piece.x--;
+		current_piece.x -= 1;
 	add();
 }
 
 void rotate(void)
 {
 	rem();
-	current_piece.r++;
+	current_piece.r += 1;
 	if (current_piece.r > 3)
 		current_piece.r = 0;
 	if (!check())
 	{
-		current_piece.r--;
+		current_piece.r -= 1;
 		if (current_piece.r < 0)
 			current_piece.r = 3;
 	}
@@ -173,11 +175,11 @@ void move_down(int multi)
 	do 
 	{
 		rem();
-		current_piece.y++;
+		current_piece.y += 1;
 		if (!check())
 		{
 			bottom = 1;
-			current_piece.y--;
+			current_piece.y -= 1;
 		}
 		add();
 	} 
@@ -231,12 +233,18 @@ int eliminate_line()
 	return ret;
 }
 
+void get_score_filename(char *filename)
+{
+	sprintf(filename, "%s/%s", getenv("HOME"), SCORE_FILENAME);
+}
+
 void load_score() 
 {
 	char filename[1024];
-	sprintf(filename, "%s/%s", getenv("HOME"), SCORE_FILENAME);
-	FILE *score_fp = fopen(filename, "r");
-	if (score_fp) 
+	FILE *score_fp;
+	
+	get_score_filename(filename);
+	if ((score_fp = fopen(filename, "r")))
 	{
 		fscanf(score_fp, "%d", &high_score);
 		fclose(score_fp);
@@ -246,9 +254,10 @@ void load_score()
 void save_score() 
 {
 	char filename[1024];
-	sprintf(filename, "%s/%s", getenv("HOME"), SCORE_FILENAME);
-	FILE *score_fp = fopen(filename, "w+");
-	if (score_fp) 
+	FILE *score_fp;
+	
+	get_score_filename(filename);
+	if ((score_fp = fopen(filename, "w+"))) 
 	{
 		fprintf(score_fp, "%d\n", high_score);
 		fclose(score_fp);
