@@ -3,8 +3,8 @@
 # You are free to use and modify this makefile under the terms of the MIT licence
 
 CC=cc
-CFLAGS:=-O3 -W
-LDFLAGS:=-lcurses -lm
+CFLAGS=-O3 -W -Wall -Wextra
+LDFLAGS=-lcurses -lm
 BINNAME=tetris
 OBJ=tetris.o game.o screen.o
 HEADERS=screen.h game.h
@@ -28,7 +28,6 @@ $(BINNAME): $(OBJ)
 	@$(ECHO) -n "Linking $(BINNAME)		"
 	@$(CC) -o $@ $^ $(LDFLAGS)
 	@$(ECHO) "[ ok ]"
-
 
 all: $(BINNAME)
 

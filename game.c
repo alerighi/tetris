@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <curses.h>
 #include <math.h>
 
 #include "game.h"
@@ -10,7 +11,7 @@
 /* Include the file whit the definitions of the pieces */
 #include "tetris_pieces.h"
 
-#define score_filename ".tetris_score"
+#define SCORE_FILENAME ".tetris_score"
 
 int level;
 int score;
@@ -27,19 +28,37 @@ struct piece_s
 static struct piece_s current_piece;
 static struct piece_s next_piece;
 
-/* Static functions */
 static int check(void);
 static void rand_piece(struct piece_s *p);
 static void rem(void);
 static void add(void);
+static void set_alarm(void);
+static void cancel_alarm(void);
 
-/* Functions implementations */
 static void rand_piece(struct piece_s *p)
 {
-	p->x=4;
-	p->y=3;
-	p->p=rand()%7;
-	p->r=0;
+	p->x = 4;
+	p->y = 3;
+	p->p = rand() % 7;
+	p->r = 0;
+}
+
+void set_alarm()
+{
+	ualarm(2000*(150-pow(level,2)),2000*(150-pow(level,2)));
+
+}
+
+void cancel_alarm()
+{
+	alarm(0);
+}
+
+void pause_game()
+{
+	cancel_alarm();
+	while (getch() != 'p');
+	set_alarm();
 }
 
 void swap_pieces() 
@@ -47,6 +66,12 @@ void swap_pieces()
 	current_piece = next_piece;
 	rand_piece(&next_piece);
 	add();
+}
+
+void update_signal(int signal)
+{
+	move_down(0);
+	refresh_screen();
 }
 
 void start_new_game() 
@@ -58,57 +83,56 @@ void start_new_game()
 	level = 1;
 	add();
 	refresh_screen();
-	ualarm(2000*(150-pow(level,2)),2000*(150-pow(level,2)));
+	set_alarm();
 }
 
 static void add(void)
 {
-	int i,e;
-	for (i=0; i<4; i++)
-		for (e=0; e<4; e++)
-			if (tetris[current_piece.p][current_piece.r][i][e]=='*')
-				screen[current_piece.y-i][current_piece.x+e]=current_piece.p+1;
+	int i, e;
+	for (i = 0; i < 4; i++)
+		for (e = 0; e < 4; e++)
+			if (tetris[current_piece.p][current_piece.r][i][e] == '*')
+				screen[current_piece.y-i][current_piece.x+e] = current_piece.p + 1;
 }
 
 static void rem(void)
 {
-	int i,e;
-	for (i=0; i<4; i++)
-		for (e=0; e<4; e++)
+	int i, e;
+	for (i = 0; i < 4; i++)
+		for (e = 0; e < 4; e++)
 			if (tetris[current_piece.p][current_piece.r][i][e]=='*')
-				screen[current_piece.y-i][current_piece.x+e]=0;
+				screen[current_piece.y-i][current_piece.x+e] = 0;
 }
 
 static int check(void)
 {
-	int i,e;
-	for (i=0; i<4; i++)
-		for (e=0; e<4; e++)
-			if (tetris[current_piece.p][current_piece.r][i][e]=='*' 
-				&& ((current_piece.y-i) >= Y 
-					|| (current_piece.y-i) < 0 
-					|| (current_piece.x+e) >= X 
-					|| (current_piece.x+e) < 0 
-					|| screen[current_piece.y-i][current_piece.x+e]))
+	int i, e;
+	for (i = 0; i < 4; i++)
+		for (e = 0; e < 4; e++)
+			if (tetris[current_piece.p][current_piece.r][i][e] == '*' 
+				&& ((current_piece.y - i) >= Y 
+					|| (current_piece.y - i) < 0 
+					|| (current_piece.x + e) >= X 
+					|| (current_piece.x + e) < 0 
+					|| screen[current_piece.y - i][current_piece.x + e]))
 							return 0;
 	return 1;
 }
 
 void get_next(char str[4][4])
 {
-	int i,e;
-	for (i=0;i<4;i++) 
+	int i, e;
+	for ( i = 0; i < 4; i++) 
 	{
-		for (e=0;e<4;e++) 
+		for (e = 0; e < 4; e++) 
 		{
-			if (tetris[next_piece.p][next_piece.r][i][e]=='*')
-				str[i][e]=next_piece.p+1;
+			if (tetris[next_piece.p][next_piece.r][i][e] == '*')
+				str[i][e] = next_piece.p + 1;
 			else
-				str[i][e]=0;
+				str[i][e] = 0;
 		}
 	}
 }
-
 
 void move_left(void)
 {
@@ -132,73 +156,97 @@ void rotate(void)
 {
 	rem();
 	current_piece.r++;
-	if (current_piece.r>3)
-		current_piece.r=0;
+	if (current_piece.r > 3)
+		current_piece.r = 0;
 	if (!check())
 	{
 		current_piece.r--;
-		if (current_piece.r<0)
-			current_piece.r=3;
+		if (current_piece.r < 0)
+			current_piece.r = 3;
 	}
 	add();
 }
 
-int move_down()
+void move_down(int multi)
 {
-	int ret=0, i;
-	rem();
-	current_piece.y++;
-	if (!check())
+	int i, bottom = 0;
+	do 
 	{
-		ret=1;
-		current_piece.y--;
-	}
-	add();
-  
+		rem();
+		current_piece.y++;
+		if (!check())
+		{
+			bottom = 1;
+			current_piece.y--;
+		}
+		add();
+	} 
+	while(multi && !bottom);
+	
 	/* If the piece reaches bottom */
-	if (ret)
+	if (bottom)
 	{
-		score++;
+		score += 1;
 
 		/* Check and eliminate full lines */
-		if ((i=eliminate_line()))
+		if ((i = eliminate_line()))
 		{
 			score += pow(i, 2) * 4;
 			level = 1 + score / 50;
-			ualarm(2000*(150-pow(level,2)),2000*(150-pow(level,2)));
+			set_alarm();
 		}
 
 		/* Checks if the game is lost */
 		if (game_is_lost())
 		{
+			cancel_alarm();
 			prompt_new_game();
-			return ret;
+			return;
 		}
 
 		/* Swaps the current piece whith the next one */
 		swap_pieces();
 	}
-	refresh_screen();
-  
+}
+
+int eliminate_line()
+{
+	int i, j, e;
+	int ret = 0;
+	for (i = 0; i < Y; i++)
+	{
+		for (j = 0; j < X; j++)
+			if (!screen[i][j])
+				break;
+
+		/* se il ciclo termina completamente allora elimino la riga */
+		if (j == X) /* trovata linea */
+		{
+			for (j = i; j > 2; j--)
+				for (e = 0; e < X; e++)
+					screen[j][e]=screen[j - 1][e];
+			ret++;
+		}
+	}
 	return ret;
 }
 
 void load_score() 
 {
-	char filename[100];
-	sprintf(filename, "%s/%s", getenv("HOME"), score_filename);
+	char filename[1024];
+	sprintf(filename, "%s/%s", getenv("HOME"), SCORE_FILENAME);
 	FILE *score_fp = fopen(filename, "r");
 	if (score_fp) 
 	{
-		int _ = fscanf(score_fp, "%d", &high_score);
+		fscanf(score_fp, "%d", &high_score);
 		fclose(score_fp);
 	} 
 }
 
 void save_score() 
 {
-	char filename[100];
-	sprintf(filename, "%s/%s", getenv("HOME"), score_filename);
+	char filename[1024];
+	sprintf(filename, "%s/%s", getenv("HOME"), SCORE_FILENAME);
 	FILE *score_fp = fopen(filename, "w+");
 	if (score_fp) 
 	{

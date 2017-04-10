@@ -5,9 +5,8 @@
 */
 
 #include <stdlib.h>
-#include <curses.h>
 #include <unistd.h>
-#include <string.h>
+#include <stdio.h>
 #include <signal.h>
 #include <time.h>
 
@@ -28,12 +27,11 @@
 
 int main(int argc, char *argv[])
 {
-    int i;
     char c;
 
     signal(SIGINT, quit);
     signal(SIGWINCH, redraw_screen);
-    signal(SIGALRM, move_down); /* action for move down piece */
+    signal(SIGALRM, update_signal); /* action for move down piece */
     srand(time(NULL));
 
     /* Command line args parses */

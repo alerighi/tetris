@@ -60,7 +60,7 @@ static void print_matrix(void);
 static void print_score(void);
 static void print_title(void);
 
-void refresh_screen(void) 
+void refresh_screen() 
 {
 	print_score();
 	print_matrix();
@@ -71,20 +71,16 @@ static void print_title()
 	int i;
 	for (i = 0; i < (int) strlen(TITLE); i++) 
 	{
-		if (TITLE[i] == '\n') 
+		if (TITLE[i] == '\n' || TITLE[i] == ' ') 
 		{
-			waddch(title_win, '\n');
+			waddch(title_win, TITLE[i]);
 		} 
-		else if (TITLE[i] != ' ') 
+		else
 		{
-			wattron(title_win, COLOR_PAIR(TITLE[i]-48));
+			wattron(title_win, COLOR_PAIR(TITLE[i] - 48));
 			waddch(title_win, BLOCK);
-			wattroff(title_win, COLOR_PAIR(TITLE[i]-48));
+			wattroff(title_win, COLOR_PAIR(TITLE[i] - 48));
 		} 
-		else 
-		{
-			waddch(title_win, ' ');
-		}
 	}
 	wrefresh(title_win);
 }
@@ -100,45 +96,23 @@ void print_matrix()
 			{
 				wattron(game_win, COLOR_PAIR(screen[y][x]));
 				mvwaddch(game_win, y, x*2, BLOCK);
-				mvwaddch(game_win, y, 1+x*2, BLOCK);
+				mvwaddch(game_win, y, 1 + x*2, BLOCK);
 				wattroff(game_win, COLOR_PAIR(screen[y][x]));
 			} 
 			else 
 			{
 				mvwaddch(game_win, y, x*2, ' ');
-				mvwaddch(game_win, y, 1+x*2, ' ');
+				mvwaddch(game_win, y, 1 + x*2, ' ');
 			}
 		}
 	}
 	wrefresh(game_win);
 }
 
-int eliminate_line()
-{
-	int i, j, e;
-	int ret = 0;
-	for (i=0;i<Y;i++)
-	{
-		for (j=0;j<X;j++)
-			if (!screen[i][j])
-				break;
-
-		/* se il ciclo termina completamente allora elimino la riga */
-		if (j==X) /* trovata linea */
-		{
-			for (j=i;j>2;j--)
-				for (e=0;e<X;e++)
-					screen[j][e]=screen[j-1][e];
-			ret++;
-		}
-	}
-	return ret;
-}
-
 int game_is_lost()
 {
 	int i;
-	for (i=0;i<X;i++)
+	for (i = 0; i < X; i++)
 		if (screen[3][i])
 			return 1;
 	return 0;
@@ -146,7 +120,7 @@ int game_is_lost()
 
 void print_score()
 {
-	int i,e;
+	int i, e;
 	char next[4][4];
 	get_next(next);
 	mvwprintw(score_win, 0, 0, "Level: %d                      ", level);
@@ -158,8 +132,8 @@ void print_score()
 		for (e = 0; e < 4; e++) 
 		{
 			wattron(score_win, COLOR_PAIR(next[i][e]));
-			mvwaddch(score_win, 5+2-i, 3+e*2, next[i][e] ? BLOCK : ' ');
-			mvwaddch(score_win, 5+2-i, 4+e*2, next[i][e] ? BLOCK : ' ');
+			mvwaddch(score_win, 5 + 2 - i, 3 + e*2, next[i][e] ? BLOCK : ' ');
+			mvwaddch(score_win, 5 + 2 - i, 4 + e*2, next[i][e] ? BLOCK : ' ');
 			wattroff(score_win, COLOR_PAIR(next[i][e]));
 		}
 	}
@@ -170,6 +144,7 @@ void print_score()
 void prompt_new_game()
 {
 	char c;
+	refresh_screen();
 	wclear(score_win);
 	wprintw(score_win,"Sorry, you lost :( score %d\n", score);
 	if (score > high_score) 
@@ -182,12 +157,12 @@ void prompt_new_game()
 	wrefresh(score_win);
 	while ((c = getch()))
 	{
-		if (c=='y')
+		if (c == 'y')
 		{
 			start_new_game();
 			break;
 		}
-		if (c=='n')
+		if (c == 'n')
 			quit();
 	}
 }
@@ -199,7 +174,7 @@ void quit()
 	exit(0);
 }
 
-void draw_windows(void) 
+void draw_windows() 
 {
 	/* stampa il titolo */
 	title_win = newwin(TITLE_W_SIZE_Y,TITLE_W_SIZE_X,TITLE_W_START_Y,TITLE_W_START_X);
@@ -220,7 +195,7 @@ void draw_windows(void)
 }
 
 /* cancella tutte le finestre */
-void destroy_windows(void) 
+void destroy_windows() 
 {
 	delwin(title_win);
 	delwin(game_border_win);
@@ -236,7 +211,7 @@ void redraw_screen()
 	draw_windows();
 }
 
-void init_curses(void)
+void init_curses()
 {
 	initscr();             /* inizzializza lo schermo */
 	cbreak();              /* input senza buffer */
@@ -245,8 +220,8 @@ void init_curses(void)
 	curs_set(0);           /* non mostrare il cursore */
 	refresh();
 
-	if ((GAME_BORDER_W_SIZE_Y+TITLE_W_SIZE_Y) > LINES ||
-		(GAME_BORDER_W_SIZE_X+30) > COLS) 
+	if ((GAME_BORDER_W_SIZE_Y+TITLE_W_SIZE_Y) > LINES 
+		|| (GAME_BORDER_W_SIZE_X + 30) > COLS) 
 	{
 		endwin();
 		printf("Your terminal is too small. Please, resize your terminal !\n");
@@ -286,21 +261,19 @@ void input_loop()
 				rotate();
 				break;
 			case KEY_DOWN: /* fast down */
-				while (!move_down());
+				move_down(1);
 				break;
 			case 'p': /* pause */
-				alarm(0);
-				while (getch()!='p');
-				ualarm(2000*(150-pow(level,2)),2000*(150-pow(level,2)));
+				pause_game();
 				break;
 			case 'r': /* restart */
 				start_new_game();
-				continue;
+				break;
 			case 'q': /* quit */
 				quit();
 		}
 
-		/* Refreshes the screen and sleeps 2ms */
+		/* Refreshes the screen */
 		refresh_screen();
     
 	} /* end while(true) */
