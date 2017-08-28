@@ -5,28 +5,18 @@
 #include <curses.h>
 #include <math.h>
 
+#include "tetris_pieces.h"
 #include "game.h"
 #include "screen.h"
 
-/* Include the file whit the definitions of the pieces */
-#include "tetris_pieces.h"
-
-#define SCORE_FILENAME ".tetris_score"
+static const char *SCORE_FILENAME = ".tetris_score";
 
 int level;
 int score;
 int high_score;
 
-struct piece_s 
-{
-	int p;
-	int r;
-	int y;
-	int x;
-};
-
-static struct piece_s current_piece;
-static struct piece_s next_piece;
+struct piece_s current_piece;
+struct piece_s next_piece;
 
 static int check(void);
 static void rand_piece(struct piece_s *p);
@@ -48,7 +38,6 @@ static void rand_piece(struct piece_s *p)
 void set_alarm()
 {
 	ualarm(2000*(150-pow(level,2)),2000*(150-pow(level,2)));
-
 }
 
 void cancel_alarm()
@@ -93,8 +82,7 @@ static void add(void)
 	int i, e;
 	for (i = 0; i < 4; i++)
 		for (e = 0; e < 4; e++)
-			if (tetris[current_piece.p][current_piece.r][i][e] == '*')
-				screen[current_piece.y-i][current_piece.x+e] = current_piece.p + 1;
+			screen[current_piece.y-i][current_piece.x+e] |= tetris[current_piece.p][current_piece.r][i][e];
 }
 
 static void rem(void)
@@ -102,7 +90,7 @@ static void rem(void)
 	int i, e;
 	for (i = 0; i < 4; i++)
 		for (e = 0; e < 4; e++)
-			if (tetris[current_piece.p][current_piece.r][i][e]=='*')
+			if (tetris[current_piece.p][current_piece.r][i][e])
 				screen[current_piece.y-i][current_piece.x+e] = 0;
 }
 
@@ -111,29 +99,14 @@ static int check(void)
 	int i, e;
 	for (i = 0; i < 4; i++)
 		for (e = 0; e < 4; e++)
-			if (tetris[current_piece.p][current_piece.r][i][e] == '*' 
+			if (tetris[current_piece.p][current_piece.r][i][e]
 				&& ((current_piece.y - i) >= Y 
 					|| (current_piece.y - i) < 0 
 					|| (current_piece.x + e) >= X 
 					|| (current_piece.x + e) < 0 
 					|| screen[current_piece.y - i][current_piece.x + e]))
-							return 0;
+				return 0;
 	return 1;
-}
-
-void get_next(char str[4][4])
-{
-	int i, e;
-	for ( i = 0; i < 4; i++) 
-	{
-		for (e = 0; e < 4; e++) 
-		{
-			if (tetris[next_piece.p][next_piece.r][i][e] == '*')
-				str[i][e] = next_piece.p + 1;
-			else
-				str[i][e] = 0;
-		}
-	}
 }
 
 void move_left(void)
@@ -157,50 +130,38 @@ void move_right(void)
 void rotate(void)
 {
 	rem();
-	current_piece.r += 1;
-	if (current_piece.r > 3)
-		current_piece.r = 0;
-	if (!check())
-	{
-		current_piece.r -= 1;
-		if (current_piece.r < 0)
-			current_piece.r = 3;
-	}
+	current_piece.r = (current_piece.r + 1) % 4;
+	if (!check()) 
+		current_piece.r = (current_piece.r - 1) % 4;
 	add();
 }
 
 void move_down(int multi)
 {
 	int i, bottom = 0;
-	do 
-	{
+	do {
 		rem();
 		current_piece.y += 1;
-		if (!check())
-		{
+		if (!check()) {
 			bottom = 1;
 			current_piece.y -= 1;
 		}
 		add();
-	} 
-	while(multi && !bottom);
+	} while(multi && !bottom);
 	
 	/* If the piece reaches bottom */
-	if (bottom)
-	{
+	if (bottom) {
 		score += 1;
 
 		/* Check and eliminate full lines */
-		if ((i = eliminate_line()))
-		{
+		if ((i = eliminate_line())) {
 			score += pow(i, 2) * 4;
 			level = 1 + score / 50;
 			set_alarm();
 		}
 
 		/* Checks if the game is lost */
-		if (game_is_lost())
-		{
+		if (game_is_lost()) {
 			cancel_alarm();
 			prompt_new_game();
 			return;
@@ -215,15 +176,13 @@ int eliminate_line()
 {
 	int i, j, e;
 	int ret = 0;
-	for (i = 0; i < Y; i++)
-	{
+	for (i = 0; i < Y; i++) {
 		for (j = 0; j < X; j++)
 			if (!screen[i][j])
 				break;
 
 		/* se il ciclo termina completamente allora elimino la riga */
-		if (j == X) /* trovata linea */
-		{
+		if (j == X) {
 			for (j = i; j > 2; j--)
 				for (e = 0; e < X; e++)
 					screen[j][e]=screen[j - 1][e];
@@ -244,8 +203,7 @@ void load_score()
 	FILE *score_fp;
 	
 	get_score_filename(filename);
-	if ((score_fp = fopen(filename, "r")))
-	{
+	if ((score_fp = fopen(filename, "r"))) {
 		fscanf(score_fp, "%d", &high_score);
 		fclose(score_fp);
 	} 
@@ -257,8 +215,7 @@ void save_score()
 	FILE *score_fp;
 	
 	get_score_filename(filename);
-	if ((score_fp = fopen(filename, "w+"))) 
-	{
+	if ((score_fp = fopen(filename, "w+"))) {
 		fprintf(score_fp, "%d\n", high_score);
 		fclose(score_fp);
 	} 

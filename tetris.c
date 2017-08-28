@@ -15,15 +15,15 @@
 
 #define VERSION "1.1.0"
 
-#define HELPMSG \
-    "Usage: %s [-hv]\n"\
-    "\t -h        : Display this help message\n"\
-    "\t -v        : Display version information\n"
+static const char *HELPMSG =
+    "Usage: %s [-hv]\n"
+    "\t -h        : Display this help message\n"
+    "\t -v        : Display version information\n";
 
-#define VERSIONMSG \
-    "This is Tetris, version v" VERSION "\n"\
-    "(c) 2016 Alessandro Righi\n"\
-    "This software is free software, relased under the terms of the MIT licence"
+static const char *VERSIONMSG =
+    "This is Tetris, version v" VERSION "\n"
+    "(c) 2016 Alessandro Righi\n"
+    "This software is free software, relased under the terms of the MIT licence";
 
 int main(int argc, char *argv[])
 {
@@ -35,26 +35,22 @@ int main(int argc, char *argv[])
     srand(time(NULL));
 
     /* Command line args parses */
-    while ((c = getopt(argc, argv, "hv")) != -1)
-    {
-        switch(c)
-        {
+    while ((c = getopt(argc, argv, "hv")) != -1) {
+        switch(c) {
             case 'h':
                 printf(HELPMSG, argv[0]);
-                exit(0);
+                exit(EXIT_SUCCESS);
             case 'v':
                 puts(VERSIONMSG);
-                exit(0);
+                exit(EXIT_SUCCESS);
             default:
                 printf(HELPMSG, argv[0]);
-                exit(1);
+                exit(EXIT_FAILURE);
         }
     }
 
-    /* init ncurses */
     init_curses();
     load_score();
     start_new_game();
     input_loop();
-    return 0;
 }
