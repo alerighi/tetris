@@ -13,12 +13,16 @@ int score;
 struct piece_s current_piece;
 struct piece_s next_piece;
 
-static void rand_piece(struct piece_s *p)
+static struct piece_s rand_piece()
 {
-	p->x = 4;
-	p->y = 3;
-	p->p = rand() % 7;
-	p->r = 0;
+	struct piece_s p = {	
+		.x = 4,
+		.y = 3,
+		.p = rand() % 7,
+		.r = 0
+	};
+
+	return p; 
 }
 
 void game_pause(int active) 
@@ -61,7 +65,7 @@ static int check()
 static void swap_pieces() 
 {
 	current_piece = next_piece;
-	rand_piece(&next_piece);
+	next_piece = rand_piece();
 	add();
 }
 
@@ -74,8 +78,8 @@ void update_on_alarm()
 void start_new_game() 
 {
 	memset(screen, 0, sizeof(screen));
-	rand_piece(&current_piece);
-	rand_piece(&next_piece);
+	current_piece = rand_piece();
+	next_piece = rand_piece();
 	score = 0;
 	level = 1;
 	add();

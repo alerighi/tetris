@@ -16,8 +16,8 @@
 #define VERSION "1.3.0"
 
 #define HELPMSG "Usage: %s [-hv]\n"	\
-	"\t -h        : Display this help message\n"\
-	"\t -v        : Display version information\n"
+	"\t -h\t display this help message\n"\
+	"\t -v\t display version information\n"
 
 #define VERSIONMSG "This is Tetris, version v" VERSION "\n" \
 	"(c) 2016 Alessandro Righi\n" 							\
