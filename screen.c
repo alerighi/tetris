@@ -67,7 +67,7 @@ static void print_title()
 			wattroff(title_win, COLOR_PAIR(*c - 48));
 		} 
 	}
-	
+
 	wrefresh(title_win);
 }
 
@@ -184,9 +184,9 @@ void init_curses()
 {
 	initscr();
 	cbreak();              /* unbuffered input */
-	keypad(stdscr, TRUE);  /* for special keys */
+	keypad(stdscr, true);  /* for special keys */
 	noecho();              /* do not echo character on screen */
-	curs_set(FALSE);       /* do not show cursor */
+	curs_set(false);       /* do not show cursor */
 	refresh();
 
 	if ((GAME_BORDER_W_SIZE_Y+TITLE_W_SIZE_Y) > LINES 
@@ -213,7 +213,7 @@ void init_curses()
 
 void _Noreturn input_loop()
 {
-	while (TRUE) {
+	while (true) {
 		switch (getch()) {
 		case KEY_LEFT:
 			move_left();
@@ -225,15 +225,15 @@ void _Noreturn input_loop()
 			rotate();
 			break;
 		case KEY_DOWN: /* fast down */
-			move_down(FALSE);
+			move_down(false);
 			break;
 		case ' ': /* instant down */
-			move_down(TRUE);
+			move_down(true);
 			break;
 		case 'p': /* pause */
-			game_pause(1);
+			game_pause(true);
 			while (getch() != 'p');
-			game_pause(0);
+			game_pause(false);
 			break;
 		case 'r': /* restart */
 			start_new_game();

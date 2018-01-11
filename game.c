@@ -25,12 +25,12 @@ static struct piece_s rand_piece()
 	return p; 
 }
 
-void game_pause(int active) 
+void game_pause(bool active) 
 {
 	if (active)
 		alarm(0);
 	else 
-		ualarm(2000*(150-(unsigned)level*2),2000*(150-(unsigned)level*2));
+		ualarm(2000 * (150 - (unsigned) level * 2), 2000 * (150 - (unsigned) level * 2));
 }
 
 static void add()
@@ -48,7 +48,7 @@ static void rem()
 				screen[current_piece.y - i][current_piece.x + j] = 0;
 }
 
-static int check()
+static bool check()
 {
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
@@ -58,8 +58,8 @@ static int check()
 					|| (current_piece.x + j) >= X 
 					|| (current_piece.x + j) < 0 
 					|| screen[current_piece.y - i][current_piece.x + j]))
-				return 0;
-	return 1;
+				return false;
+	return true;
 }
 
 static void swap_pieces() 
@@ -71,7 +71,7 @@ static void swap_pieces()
 
 void update_on_alarm()
 {
-	move_down(0);
+	move_down(false);
 	refresh_screen();
 }
 
@@ -84,7 +84,7 @@ void start_new_game()
 	level = 1;
 	add();
 	refresh_screen();
-	game_pause(0);
+	game_pause(false);
 }
 
 void move_left()
@@ -114,13 +114,13 @@ void rotate()
 	add();
 }
 
-static int game_is_lost()
+static bool game_is_lost()
 {
 	for (int i = 0; i < X; i++)
 		if (screen[3][i]) /* if something is in the 4th line from top, game is lost */
-			return 1;
+			return true;
 	
-	return 0;
+	return false;
 }
 
 static int eliminate_lines()
@@ -148,16 +148,16 @@ static int eliminate_lines()
 	return lines_eliminated;
 }
 
-void move_down(int multi)
+void move_down(bool multi)
 {
-	int bottom = 0;
+	bool bottom = false;
 
 	/* move down the piece */
 	do {
 		rem();
 		current_piece.y++;
 		if (!check()) { /* cannot move further down */
-			bottom = 1;
+			bottom = true;
 			current_piece.y--;
 		}
 		add();
@@ -177,11 +177,11 @@ void move_down(int multi)
 
 		/* calculate new level from score */
 		level = 1 + score / 500;
-		game_pause(0); /* set new alarm value based on new level */
+		game_pause(false); /* set new alarm value based on new level */
 
 		/* Checks if the game is lost */
 		if (game_is_lost()) {
-			game_pause(1);
+			game_pause(true);
 			prompt_new_game();
 			return;
 		}
