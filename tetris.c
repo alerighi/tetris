@@ -1,6 +1,6 @@
 /*
  * Simple tetris game built using ncurses library
- * (c) 2016 Alessandro Righi
+ * (c) 2016-2018 Alessandro Righi
  * You are free to use this program under the terms of the MIT licence
  */
 
