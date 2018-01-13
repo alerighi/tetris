@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "high_score.h"
 
@@ -18,6 +19,9 @@ static char *get_score_filename()
 void load_score() 
 {
 	FILE *score_fp;
+
+	if (access(get_score_filename(), F_OK) == -1) 
+		return; // high score file doesn't exist
 
 	if ((score_fp = fopen(get_score_filename(), "r"))) {
 		fscanf(score_fp, "%d", &high_score);
