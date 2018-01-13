@@ -3,7 +3,7 @@
 # You are free to use and modify this makefile under the terms of the MIT licence
 
 CC=cc
-CFLAGS=-O3 -Wall -Wextra -pedantic -std=c11
+CFLAGS=-O3 -Wall -Wextra -pedantic -std=gnu11
 LDFLAGS=-lcurses
 BINNAME=tetris
 OBJ=tetris.o game.o screen.o pieces.o high_score.o 

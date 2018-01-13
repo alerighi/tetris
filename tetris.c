@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <signal.h>
-#include <getopt.h>
 #include <time.h>
 
 #include "game.h"
