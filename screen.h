@@ -7,10 +7,10 @@
 extern char screen[Y][X];
 
 void prompt_new_game(void);
-void _Noreturn quit(void);
+_Noreturn void quit(void);
 void init_curses(void);
 void refresh_screen(void);
 void redraw_screen(void);
-void _Noreturn input_loop(void);
+_Noreturn void input_loop(void);
 
 #endif /* SCREEN_H */

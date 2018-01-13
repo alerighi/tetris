@@ -141,7 +141,7 @@ void prompt_new_game()
 	start_new_game();
 }
 
-void _Noreturn quit()
+void quit()
 {
 	endwin();
 	save_score();
@@ -211,7 +211,7 @@ void init_curses()
 	draw_windows();
 }
 
-void _Noreturn input_loop()
+void input_loop()
 {
 	while (true) {
 		switch (getch()) {
