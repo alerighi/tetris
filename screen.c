@@ -1,5 +1,6 @@
 #include <curses.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "screen.h"
 #include "game.h"
@@ -180,6 +181,12 @@ void redraw_screen()
 	draw_windows();
 }
 
+bool has_256_colors() 
+{
+	char *term = getenv("TERM");
+	return !strcmp(term, "xterm-256color") || !strcmp(term, "xterm");	
+}
+
 void init_curses()
 {
 	initscr();
@@ -201,7 +208,10 @@ void init_curses()
 
 	init_pair(PIECE_I, COLOR_CYAN, -1);
 	init_pair(PIECE_O, COLOR_YELLOW, -1);
-	init_pair(PIECE_L, 203, -1);
+	if (has_256_colors())
+		init_pair(PIECE_L, 203, -1);
+	else
+		init_pair(PIECE_L, COLOR_WHITE, -1);
 	init_pair(PIECE_J, COLOR_BLUE, -1);
 	init_pair(PIECE_T, COLOR_MAGENTA, -1);
 	init_pair(PIECE_S, COLOR_GREEN, -1);
