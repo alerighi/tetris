@@ -6,7 +6,7 @@
 
 int high_score; 
 
-static char *get_score_filename()
+static char *get_score_filename(void)
 {
 	static char score_filename[1024];
 
@@ -16,7 +16,7 @@ static char *get_score_filename()
 	return score_filename;
 }
 
-void load_score() 
+static void load_score(void) 
 {
 	FILE *score_fp;
 
@@ -31,14 +31,20 @@ void load_score()
 	}
 }
 
-void save_score() 
+static void save_score(void) 
 {
 	FILE *score_fp;
 
-	if ((score_fp = fopen(get_score_filename(), "w+"))) {
+	if ((score_fp = fopen(get_score_filename(), "w"))) {
 		fprintf(score_fp, "%d\n", high_score);
 		fclose(score_fp);
 	} else {
 		perror("save_score() :: error opening high score file");
 	}
+}
+
+void init_score(void) 
+{
+	load_score();
+	atexit(save_score);
 }

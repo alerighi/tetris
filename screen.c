@@ -8,46 +8,22 @@
 #include "high_score.h"
 
 /* Block character definition */
-#define BLOCK (' ' | A_REVERSE)
-
-/* window positioning definitions */
-#define CENTER (COLS/2)
-
-#define TITLE_W_SIZE_X 44
-#define TITLE_W_SIZE_Y 5
-#define TITLE_W_START_X (CENTER-TITLE_W_SIZE_X/2-5)
-#define TITLE_W_START_Y 1
-
-#define GAME_W_START_X (CENTER-X*2)
-#define GAME_W_START_Y (TITLE_W_SIZE_Y+3)
-#define GAME_W_SIZE_X (X*2)
-#define GAME_W_SIZE_Y (Y)
-
-#define GAME_BORDER_W_START_X (GAME_W_START_X-1)
-#define GAME_BORDER_W_START_Y (GAME_W_START_Y-1)
-#define GAME_BORDER_W_SIZE_X (GAME_W_SIZE_X+2)
-#define GAME_BORDER_W_SIZE_Y (GAME_W_SIZE_Y+2)
-
-#define SCORE_W_START_X (GAME_W_START_X+GAME_W_SIZE_X+3)
-#define SCORE_W_START_Y (GAME_W_START_Y)
-#define SCORE_W_SIZE_X (COLS-SCORE_W_START_X)
-#define SCORE_W_SIZE_Y (GAME_W_SIZE_Y-1)
+static const chtype BLOCK = ' ' | A_REVERSE;
 
 static WINDOW *game_win;
-static WINDOW *game_border_win;
 static WINDOW *score_win;
 static WINDOW *title_win;
 
 char screen[Y][X];
 
-static const char *TITLE  =
+static const char *const TITLE  =
 	"111111  222222  333333  4444444  55  666666\n"
 	"  11    22        33    44   44  55  66    \n"
 	"  11    22222     33    444444   55  666666\n"
 	"  11    22        33    44   44  55      66\n"
 	"  11    222222    33    44    44 55  666666\n";
 
-static const char *CONTROLS =
+static const char *const CONTROLS =
 	"\nControls:                     "
 	"\n   arrow left/right: move     "
 	"\n   arrow up: rotate           "
@@ -57,7 +33,7 @@ static const char *CONTROLS =
 	"\n   r: restart                 "
 	"\n   q: quit                    ";
 
-static void print_title() 
+static void print_title(void) 
 {
 	for (const char *c = TITLE; *c != '\0'; c++) {
 		if (*c == '\n' || *c == ' ') {
@@ -72,18 +48,18 @@ static void print_title()
 	wrefresh(title_win);
 }
 
-static void print_matrix()
+static void print_matrix(void)
 {
 	for (int y = 0; y < Y; y++) {
 		for (int x = 0; x < X; x++) {
 			if (screen[y][x]) {
 				wattron(game_win, COLOR_PAIR(screen[y][x]));
-				mvwaddch(game_win, y, x*2, BLOCK);
-				mvwaddch(game_win, y, 1 + x*2, BLOCK);
+				mvwaddch(game_win, y + 1, x * 2 + 1, BLOCK);
+				mvwaddch(game_win, y + 1, x * 2 + 2, BLOCK);
 				wattroff(game_win, COLOR_PAIR(screen[y][x]));
 			} else {
-				mvwaddch(game_win, y, x*2, ' ');
-				mvwaddch(game_win, y, 1 + x*2, ' ');
+				mvwaddch(game_win, y + 1, x * 2 + 1, ' ');
+				mvwaddch(game_win, y + 1, x * 2 + 2, ' ');
 			}
 		}
 	}
@@ -91,7 +67,7 @@ static void print_matrix()
 	wrefresh(game_win);
 }
 
-static void print_score()
+static void print_score(void)
 {
 	mvwprintw(score_win, 0, 0, "Level: %d                      ", level);
 	mvwprintw(score_win, 1, 0, "Score: %d                      ", score);
@@ -101,8 +77,9 @@ static void print_score()
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			mvwaddch(score_win, 5 + 2 - i, 3 + j*2, tetris[next_piece.p][next_piece.r][i][j] ? BLOCK : ' ');
-			mvwaddch(score_win, 5 + 2 - i, 4 + j*2, tetris[next_piece.p][next_piece.r][i][j] ? BLOCK : ' ');
+			chtype ch = tetris[next_piece.p][next_piece.r][i][j] ? BLOCK : ' ';
+			mvwaddch(score_win, 5 + 2 - i, 3 + j * 2, ch);
+			mvwaddch(score_win, 5 + 2 - i, 4 + j * 2, ch);
 		}
 	}
 
@@ -112,13 +89,13 @@ static void print_score()
 	wrefresh(score_win);
 }
 
-void refresh_screen() 
+void refresh_screen(void) 
 {
 	print_score();
 	print_matrix();
 }
 
-void prompt_new_game()
+void prompt_new_game(void)
 {
 	refresh_screen();
 	wclear(score_win);
@@ -127,67 +104,81 @@ void prompt_new_game()
 	if (score > high_score) {
 		wprintw(score_win, "Congratulations! New record!\n");
 		high_score = score;
-		save_score();
 	}
 	
 	wprintw(score_win, "Start a new game ? (y/n)");
 	wrefresh(score_win);
 
-	int c;
-	while ((c = getch()) != 'y') {
-		if (c == 'n')
-			quit();
+	chtype ch;
+	while ((ch = getch()) != 'y') {
+		if (ch == 'n')
+			exit(EXIT_SUCCESS);
 	}
 
 	start_new_game();
 }
 
-void quit()
+static void draw_windows(void) 
 {
-	endwin();
-	save_score();
-	exit(EXIT_SUCCESS);
-}
+	int center = (COLS / 2);
 
-static void draw_windows() 
-{
-	title_win = newwin(TITLE_W_SIZE_Y ,TITLE_W_SIZE_X, TITLE_W_START_Y, TITLE_W_START_X);
+	int title_win_width = 44;
+	int title_win_height = 5;
+	int title_win_start_x = center - title_win_width / 2 - 5;
+	int title_win_start_y = 1;
+
+	int game_win_start_x = center - X * 2 - 1;
+	int game_win_start_y = title_win_height + 2;
+	int game_win_width = X * 2 + 2;
+	int game_win_height = Y + 2;
+
+	int score_win_start_x = game_win_start_x + game_win_width + 3;
+	int score_win_start_y = game_win_start_y;
+	int score_win_width = COLS - score_win_start_x;
+	int score_win_height = game_win_height - 1;
+
+	int min_lines = game_win_height + title_win_height;
+	int min_columns = game_win_width + 30;
+
+	if (LINES < min_lines || COLS < min_columns) {
+		endwin();
+		fprintf(stderr, "Your terminal is too small. Resize your terminal and retry!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	score_win = newwin(score_win_height, score_win_width, score_win_start_y, score_win_start_x);
+	wrefresh(score_win);
+
+	title_win = newwin(title_win_height ,title_win_width, title_win_start_y, title_win_start_x);
 	print_title();
 
-	game_border_win = newwin(GAME_BORDER_W_SIZE_Y, GAME_BORDER_W_SIZE_X, GAME_BORDER_W_START_Y, GAME_BORDER_W_START_X);
-	box(game_border_win, 0, 0);
-	wrefresh(game_border_win);
-
-	game_win = newwin(GAME_W_SIZE_Y, GAME_W_SIZE_X, GAME_W_START_Y, GAME_W_START_X);
+	game_win = newwin(game_win_height, game_win_width, game_win_start_y, game_win_start_x);
+	box(game_win, 0, 0);
 	wrefresh(game_win);
-
-	score_win = newwin(SCORE_W_SIZE_Y, SCORE_W_SIZE_X, SCORE_W_START_Y, SCORE_W_START_X);
-	wrefresh(score_win);
 }
 
-static void destroy_windows() 
+static void destroy_windows(void) 
 {
 	delwin(title_win);
-	delwin(game_border_win);
 	delwin(game_win);
 	delwin(score_win);
 	clear();
 	refresh();
 }
 
-void redraw_screen() 
+static void handle_sigwinch(int __attribute__((unused)) signal) 
 {
 	destroy_windows();
 	draw_windows();
 }
 
-bool has_256_colors() 
+static bool has_256_colors(void) 
 {
 	char *term = getenv("TERM");
 	return !strcmp(term, "xterm-256color") || !strcmp(term, "xterm");	
 }
 
-void init_curses()
+void init_curses(void)
 {
 	initscr();
 	cbreak();              /* unbuffered input */
@@ -196,12 +187,11 @@ void init_curses()
 	curs_set(false);       /* do not show cursor */
 	refresh();
 
-	if ((GAME_BORDER_W_SIZE_Y+TITLE_W_SIZE_Y) > LINES 
-		|| (GAME_BORDER_W_SIZE_X + 30) > COLS) {
-		endwin();
-		fprintf(stderr, "Your terminal is too small. Resize your terminal and retry!\n");
-		exit(EXIT_FAILURE);
-	}
+	/* ensure correct ncurses termination on exit */
+	atexit((void (*)(void)) endwin);		
+
+	/* register terminal resize signal handler */
+	signal(SIGWINCH, handle_sigwinch);
 
 	use_default_colors();
 	start_color();
@@ -221,7 +211,7 @@ void init_curses()
 	draw_windows();
 }
 
-void input_loop()
+_Noreturn void input_loop(void)
 {
 	while (true) {
 		switch (getch()) {
@@ -249,7 +239,7 @@ void input_loop()
 			start_new_game();
 			break;
 		case 'q': /* quit */
-			quit();
+			exit(EXIT_SUCCESS);
 		}
 		refresh_screen();
 	}

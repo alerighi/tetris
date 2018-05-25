@@ -12,16 +12,15 @@
 
 #include "game.h"
 #include "screen.h"
+#include "high_score.h"
 
-#define VERSION "1.3.0"
+static const char *const HELPMSG = "Usage: %s [-hv]\n"
+	"\t -h\t display this help message\n"
+	"\t -v\t display version information\n";
 
-#define HELPMSG "Usage: %s [-hv]\n"	\
-	"\t -h\t display this help message\n"\
-	"\t -v\t display version information\n"
-
-#define VERSIONMSG "This is Tetris, version v" VERSION "\n" \
-	"(c) 2016 Alessandro Righi\n" 							\
-	"This software is free software, relased under the terms of the MIT licence"
+static const char *const VERSIONMSG = "This is Tetris, version v1.3.0\n"
+	"(c) 2016-2018 Alessandro Righi\n" 							\
+	"This software is free software, relased under the terms of the MIT licence";
 
 static void parse_cmdline(int argc, char *argv[]) 
 {
@@ -41,30 +40,13 @@ static void parse_cmdline(int argc, char *argv[])
 	}
 }
 
-static void signal_handler(int signal) 
-{
-	switch (signal) {
-	case SIGINT:
-	case SIGTERM:
-		quit();
-	case SIGWINCH:
-		redraw_screen();
-		break;
-	case SIGALRM:
-		update_on_alarm();
-	}
-}
-
 int main(int argc, char *argv[])
 {
-	signal(SIGINT, signal_handler);
-	signal(SIGTERM, signal_handler);
-	signal(SIGWINCH, signal_handler);
-	signal(SIGALRM, signal_handler);
+	signal(SIGALRM, update_on_alarm); /* TODO: this is a violation of POSIX standard!*/
 	srand((unsigned int) time(NULL));
 	parse_cmdline(argc, argv);
 	init_curses();
-	load_score();
+	init_score();
 	start_new_game();
 	input_loop();
 }

@@ -13,6 +13,7 @@ struct piece_s {
 
 extern int level;
 extern int score;
+
 extern struct piece_s current_piece;
 extern struct piece_s next_piece;
 

@@ -1,6 +1,7 @@
 #include <string.h> /* for memset() */
 #include <stdlib.h> /* for rand() */
 #include <unistd.h> /* for alarm() */
+#include <math.h>
 
 #include "pieces.h"
 #include "game.h"
@@ -27,10 +28,12 @@ static struct piece_s rand_piece()
 
 void game_pause(bool active) 
 {
-	if (active)
+	if (active) {
 		alarm(0);
-	else 
-		ualarm(2000 * (150 - (unsigned) level * 2), 2000 * (150 - (unsigned) level * 2));
+	} else {
+		useconds_t delay = 1000 * (800 * pow(0.9, level));
+		ualarm(delay, delay);
+	}
 }
 
 static void add()
