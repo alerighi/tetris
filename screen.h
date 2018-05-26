@@ -9,9 +9,7 @@ enum {
 extern char screen[Y][X];
 
 void prompt_new_game(void);
-void init_curses(void);
-void refresh_screen(void);
-void redraw_screen(void);
-_Noreturn void input_loop(void);
+void init_graphics(void);
+void main_loop(void);
 
 #endif /* SCREEN_H */

@@ -1,195 +1,193 @@
 #include <string.h> /* for memset() */
-#include <stdlib.h> /* for rand() */
-#include <unistd.h> /* for alarm() */
+#include <stdio.h> /* for debug */
+#include <stdlib.h>
 #include <math.h>
 
 #include "pieces.h"
 #include "game.h"
 #include "screen.h"
-#include "high_score.h"
+#include "score.h"
 
-int level;
-int score;
+static struct piece current_piece;
+static struct piece next_piece;
 
-struct piece_s current_piece;
-struct piece_s next_piece;
+/* delay to wait for input (milliseconds) */
+int delay; 
 
-static struct piece_s rand_piece()
+static void add_current_piece(void)
 {
-	struct piece_s p = {	
-		.x = 4,
-		.y = 3,
-		.p = rand() % 7,
-		.r = 0
-	};
-
-	return p; 
-}
-
-void game_pause(bool active) 
-{
-	if (active) {
-		alarm(0);
-	} else {
-		useconds_t delay = 1000 * (800 * pow(0.9, level));
-		ualarm(delay, delay);
+	for (int y = 0; y < 4; y++) {
+		for (int x = 0; x < 4; x++) {
+			if (tetris[current_piece.piece][current_piece.rotation][y][x])
+				screen[current_piece.position.y - y][current_piece.position.x + x] = current_piece.piece + 1;
+		}
 	}
 }
 
-static void add()
+static void remove_current_piece(void)
 {
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			screen[current_piece.y - i][current_piece.x + j] |= tetris[current_piece.p][current_piece.r][i][j];
+	for (int y = 0; y < 4; y++) { 
+		for (int x = 0; x < 4; x++) {
+			if (tetris[current_piece.piece][current_piece.rotation][y][x])
+				screen[current_piece.position.y - y][current_piece.position.x + x] = 0;
+		}
+	}
 }
 
-static void rem()
+static bool check_piece_overlap(void)
 {
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			if (tetris[current_piece.p][current_piece.r][i][j])
-				screen[current_piece.y - i][current_piece.x + j] = 0;
-}
-
-static bool check()
-{
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			if (tetris[current_piece.p][current_piece.r][i][j]
-				&& ((current_piece.y - i) >= Y 
-					|| (current_piece.y - i) < 0 
-					|| (current_piece.x + j) >= X 
-					|| (current_piece.x + j) < 0 
-					|| screen[current_piece.y - i][current_piece.x + j]))
-				return false;
-	return true;
-}
-
-static void swap_pieces() 
-{
-	current_piece = next_piece;
-	next_piece = rand_piece();
-	add();
-}
-
-void update_on_alarm()
-{
-	move_down(false);
-	refresh_screen();
-}
-
-void start_new_game() 
-{
-	memset(screen, 0, sizeof(screen));
-	current_piece = rand_piece();
-	next_piece = rand_piece();
-	score = 0;
-	level = 1;
-	add();
-	refresh_screen();
-	game_pause(false);
-}
-
-void move_left()
-{
-	rem();
-	current_piece.x--;
-	if (!check())
-		current_piece.x++;
-	add();
-}
-
-void move_right()
-{
-	rem();
-	current_piece.x++;
-	if (!check())
-		current_piece.x--;
-	add();
-}
-
-void rotate()
-{
-	rem();
-	current_piece.r = (current_piece.r + 1) % 4;
-	if (!check()) 
-		current_piece.r = (current_piece.r - 1) % 4;
-	add();
-}
-
-static bool game_is_lost()
-{
-	for (int i = 0; i < X; i++)
-		if (screen[3][i]) /* if something is in the 4th line from top, game is lost */
-			return true;
-	
+	for (int y = 0; y < 4; y++) {
+		for (int x = 0; x < 4; x++) {
+			if (tetris[current_piece.piece][current_piece.rotation][y][x]
+				&& ((current_piece.position.y - y) >= Y 
+					|| (current_piece.position.y - y) < 0 
+					|| (current_piece.position.x + x) >= X 
+					|| (current_piece.position.x + x) < 0 
+					|| screen[current_piece.position.y - y][current_piece.position.x + x]))
+				return true;
+		}
+	}
 	return false;
 }
 
-static int eliminate_lines()
+void start_new_game(void) 
+{
+	memset(screen, 0, sizeof(screen));
+	current_piece = get_random_piece();
+	next_piece = get_random_piece();
+	score = 0;
+	level = 1;
+	add_current_piece();
+	delay = 800 * pow(0.9, level);
+}
+
+static bool is_game_lost(void)
+{
+	for (int i = 0; i < X; i++) {
+		if (screen[3][i]) /* if something is in the 4th line from top, game is lost */
+			return true;
+	}
+
+	return false;
+}
+
+static int eliminate_lines(void)
 {
 	int lines_eliminated = 0;
 
 	/* search a line to eliminate */
-	for (int i = 0; i < Y; i++) {
+	for (int y = 0; y < Y; y++) {
 
 		/* search if the line is complete */
-		int j; 
-		for (j = 0; j < X && screen[i][j]; j++);
+		int x; 
+		for (x = 0; x < X && screen[y][x]; x++);
 		
-		if (j != X) /* line not complete, search next */
+		if (x != X) /* line not complete, search next */
 			continue; 
 
 		/* eliminate line i and move all superior lines down */ 
-		for (j = i; j > 2; j--)
-			for (int k = 0; k < X; k++)
-				screen[j][k] = screen[j - 1][k];
+		for (int h = y; h > 2; h--) {
+			for (int k = 0; k < X; k++) {
+				screen[h][k] = screen[h - 1][k];
+			}
+		}
 
 		lines_eliminated++;
 	}
+	
+	/* calculate points based on number of lines eliminated */
+	switch (lines_eliminated) {
+	case 0: return 1;
+	case 1: return 40;
+	case 2: return 100; 
+	case 3: return 300; 
+	case 4: return 1200;
+	}
 
-	return lines_eliminated;
+	return 0;
 }
 
-void move_down(bool multi)
+static void handle_piece_bottom(void)
+{
+	score += eliminate_lines();
+
+	/* calculate new level from score */
+	level = 1 + score / 700;
+
+	/* Checks if the game is lost */
+	if (is_game_lost()) {
+		prompt_new_game();
+		return;
+	}
+
+	/* Swaps the current piece whith the next one */
+	current_piece = next_piece;
+	next_piece = get_random_piece();
+	add_current_piece();
+}
+
+static bool do_move_down(void)
 {
 	bool bottom = false;
 
-	/* move down the piece */
-	do {
-		rem();
-		current_piece.y++;
-		if (!check()) { /* cannot move further down */
-			bottom = true;
-			current_piece.y--;
-		}
-		add();
-	} while (multi && !bottom); /* if multi, move until bottom */
+	remove_current_piece();
+	current_piece.position.y++;
+	if (check_piece_overlap()) { /* cannot move down */
+		bottom = true;
+		current_piece.position.y--;
+	}
+	add_current_piece();
 	
-	/* If the piece reaches bottom */
-	if (bottom) {
-		score++;
+	delay = 800 * pow(0.9, level);
 
-		/* Check and eliminate full lines */
-		switch (eliminate_lines()) {
-		case 1: score += 40 * level; break;
-		case 2: score += 100 * level; break;
-		case 3: score += 300 * level; break;
-		case 4: score += 1200 * level; break;
+	return bottom;
+}
+
+void move_down(void) 
+{
+	if (do_move_down())
+		handle_piece_bottom();
+}
+
+void move_bottom(void)
+{
+	while (!do_move_down())
+		/* loop */;
+	handle_piece_bottom();
+}
+
+void move_left(void)
+{
+	remove_current_piece();
+	current_piece.position.x--;
+	if (check_piece_overlap())
+		current_piece.position.x++;
+	add_current_piece();
+}
+
+void move_right(void)
+{
+	remove_current_piece();
+	current_piece.position.x++;
+	if (check_piece_overlap())
+		current_piece.position.x--;
+	add_current_piece();
+}
+
+void rotate(void)
+{
+	remove_current_piece();
+	current_piece.rotation = (current_piece.rotation + 1) % 4;
+	if (check_piece_overlap()) 
+		current_piece.rotation = (current_piece.rotation - 1) % 4;
+	add_current_piece();
+}
+
+void get_next_piece(char next[4][4])
+{
+	for (int y = 0; y < 4; y++) {
+		for (int x = 0; x < 4; x++) {
+			next[y][x] = tetris[next_piece.piece][next_piece.rotation][y][x] ? next_piece.piece + 1 : 0; 
 		}
-
-		/* calculate new level from score */
-		level = 1 + score / 500;
-		game_pause(false); /* set new alarm value based on new level */
-
-		/* Checks if the game is lost */
-		if (game_is_lost()) {
-			game_pause(true);
-			prompt_new_game();
-			return;
-		}
-
-		/* Swaps the current piece whith the next one */
-		swap_pieces();
 	}
 }

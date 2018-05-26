@@ -1,19 +1,19 @@
 # Makefile for tetris
-# Copyright (c) 2016 - Alessandro Righi - All rights reserved
+# Copyright (c) 2016-2018 - Alessandro Righi - All rights reserved
 # You are free to use and modify this makefile under the terms of the MIT licence
 
 CFLAGS=-O3 -Wall -Wextra -pedantic -std=c11
 LDFLAGS=-lcurses
 BINNAME=tetris
-OBJ=tetris.o game.o screen.o pieces.o high_score.o 
-HEADERS=screen.h game.h pieces.h high_score.h
+OBJ=tetris.o game.o screen.o pieces.o score.o 
+HEADERS=screen.h game.h pieces.h score.h
 PREFIX=/usr/local/
 BIN_DIR=$(PREFIX)/bin
 MAN_DIR=$(PREFIX)/share/man/man6
 MAN_PAGE=tetris.6
 RM=rm -rf
 INSTALL=install
-VERSION=1.3.0
+VERSION=1.4.0
 ECHO=/bin/echo
 
 .PHONY: all run clean rebuild help install uninstall
@@ -67,4 +67,3 @@ help:
 	@$(ECHO) "To clean the sources eliminating all the binary file type 'make clean'"
 	@$(ECHO) "To completly rebuild the program type 'make rebuild'"
 	@$(ECHO) "To get addictional help about the program type 'man $(BINNAME)' after installing the game"
-# DO NOT DELETE
