@@ -84,15 +84,9 @@ static int eliminate_lines(void)
 	}
 	
 	/* calculate points based on number of lines eliminated */
-	switch (lines_eliminated) {
-	case 0: return 1;
-	case 1: return 40;
-	case 2: return 100; 
-	case 3: return 300; 
-	case 4: return 1200;
-	}
+	const int points_per_line[] = { 0, 1, 40, 300, 1200 };
 
-	return 0;
+	return points_per_line[lines_eliminated];
 }
 
 static void handle_piece_bottom(void)
