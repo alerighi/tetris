@@ -9,7 +9,7 @@ CFLAGS:=-O3 -Wall -Wextra -pedantic -std=c11
 LDFLAGS:=-lcurses
 BINNAME:=tetris
 SOURCES:=$(wildcard $(SOURCEDIR)/*.c)
-HEADERS:=$(wildcard $(HEADERSDIR)/*.h)
+HEADERS:=$(wildcard $(INCLUDEDIR)/*.h)
 OBJECTS:=$(patsubst $(SOURCEDIR)/%.c, $(BUILDDIR)/%.o, $(SOURCES))
 PREFIX:=/usr/local
 
