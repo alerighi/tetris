@@ -17,7 +17,7 @@ static const char HELPMSG[] = "Usage: tetris [-hv]\n"
 	"\t -h\t display this help message\n"
 	"\t -v\t display version information";
 
-static const char VERSIONMSG[] = "This is Tetris, version v1.4.0\n"
+static const char VERSIONMSG[] = "Tetris version v1.4.0\n"
 	"(c) 2016-2018 Alessandro Righi\n"
 	"This software is free software, relased under the terms of the MIT licence";
 
@@ -25,7 +25,7 @@ static void parse_cmdline(int argc, char *argv[])
 {
 	int opt;
 	while ((opt = getopt(argc, argv, "hv")) != -1) {
-		switch(opt) {
+		switch (opt) {
 		case 'h':
 			puts(HELPMSG);
 			exit(EXIT_SUCCESS);
