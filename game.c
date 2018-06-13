@@ -1,6 +1,5 @@
 #include <string.h> /* for memset() */
-#include <stdio.h> /* for debug */
-#include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 
 #include "pieces.h"
@@ -39,10 +38,10 @@ static bool check_piece_overlap(void)
 	for (int y = 0; y < 4; y++) {
 		for (int x = 0; x < 4; x++) {
 			if (tetris[current_piece.piece][current_piece.rotation][y][x]
-				&& ((current_piece.position.y - y) >= Y 
-					|| (current_piece.position.y - y) < 0 
-					|| (current_piece.position.x + x) >= X 
-					|| (current_piece.position.x + x) < 0 
+				&& (current_piece.position.y - y >= Y 
+					|| current_piece.position.y - y < 0 
+					|| current_piece.position.x + x >= X 
+					|| current_piece.position.x + x < 0 
 					|| screen[current_piece.position.y - y][current_piece.position.x + x]))
 				return true;
 		}
@@ -58,17 +57,6 @@ void start_new_game(void)
 	score = 0;
 	level = 1;
 	add_current_piece();
-	delay = 800 * pow(0.9, level);
-}
-
-static bool is_game_lost(void)
-{
-	for (int i = 0; i < X; i++) {
-		if (screen[3][i]) /* if something is in the 4th line from top, game is lost */
-			return true;
-	}
-
-	return false;
 }
 
 static int eliminate_lines(void)
@@ -114,15 +102,15 @@ static void handle_piece_bottom(void)
 	/* calculate new level from score */
 	level = 1 + score / 700;
 
-	/* Checks if the game is lost */
-	if (is_game_lost()) {
+	/* Swaps the current piece whith the next one */
+	current_piece = next_piece;
+	next_piece = get_random_piece();
+
+	if (check_piece_overlap()) {
 		prompt_new_game();
 		return;
 	}
 
-	/* Swaps the current piece whith the next one */
-	current_piece = next_piece;
-	next_piece = get_random_piece();
 	add_current_piece();
 }
 

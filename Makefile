@@ -5,65 +5,38 @@
 CFLAGS=-O3 -Wall -Wextra -pedantic -std=c11
 LDFLAGS=-lcurses
 BINNAME=tetris
-OBJ=tetris.o game.o screen.o pieces.o score.o 
-HEADERS=screen.h game.h pieces.h score.h
-PREFIX=/usr/local/
-BIN_DIR=$(PREFIX)/bin
-MAN_DIR=$(PREFIX)/share/man/man6
-MAN_PAGE=tetris.6
-RM=rm -rf
-INSTALL=install
+OBJS=tetris.o game.o screen.o pieces.o score.o 
+PREFIX=/usr/local
 VERSION=1.4.0
-ECHO=/bin/echo
 
-.PHONY: all run clean rebuild help install uninstall
-
-%.o: %.c $(HEADERS)
-	@$(ECHO) -n "Compiling $<	"
-	@$(CC) -c -o $@ $< $(CFLAGS)
-	@$(ECHO) "[ ok ]"
-
-$(BINNAME): $(OBJ)
-	@$(ECHO) -n "Linking $(BINNAME)		"
-	@$(CC) -o $@ $^ $(LDFLAGS)
-	@$(ECHO) "[ ok ]"
+.PHONY: all clean install uninstall
 
 all: $(BINNAME)
 
-run: $(BINNAME)
-	@$(ECHO) "Running $(BINNAME)"
-	@./$(BINNAME)
+tetris.o: tetris.c game.h screen.h score.h 
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+screen.o: screen.c screen.h game.h score.h 
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+game.o: game.c game.h screen.h pieces.h score.h 
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+score.o: score.c score.h 
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+pieces.o: pieces.c pieces.h 
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+$(BINNAME): $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	@$(ECHO) -n "Cleaning sources 	"
-	@$(RM) *.o $(BINNAME).dSYM
-	@$(RM) $(BINNAME)
-	@$(ECHO) "[ ok ]"
+	rm -f *.o 
+	rm -f $(BINNAME)
 
 install: $(BINNAME) $(MAN_PAGE)
-	@$(ECHO) -n "Installing $(BINNAME) binary 	"
-	@$(INSTALL) -s $(BINNAME) $(BIN_DIR)
-	@$(ECHO) "[ ok ]"
-	@$(ECHO) -n "Installing $(BINNAME) manpage 	"
-	@$(INSTALL) -d $(MAN_DIR)
-	@$(INSTALL) $(MAN_PAGE) $(MAN_DIR)
-	@$(ECHO) "[ ok ]"
+	install -s $(BINNAME) $(PREFIX)/bin
 
 uninstall:
-	@$(ECHO) -n "Uninstalling $(BINNAME) binary 	"
-	@$(RM) $(BIN_DIR)/$(BINNAME)
-	@$(ECHO) "[ ok ]"
-	@$(ECHO) -n "Uninstalling $(BINNAME) manpage 	"
-	@$(RM) $(MAN_DIR)/$(MAN_PAGE)
-	@$(ECHO) "[ ok ]"
-
-rebuild: clean $(BINNAME)
-
-help:
-	@$(ECHO) "This is $(BINNAME), version $(VERSION)"
-	@$(ECHO) "To compile the game type 'make'"
-	@$(ECHO) "To install the game, type 'make install'"
-	@$(ECHO) "To run the game whitout installing type './$(BINNAME)' or type 'make run'"
-	@$(ECHO) "To clean the sources eliminating all the binary file type 'make clean'"
-	@$(ECHO) "To completly rebuild the program type 'make rebuild'"
-	@$(ECHO) "To get addictional help about the program type 'man $(BINNAME)' after installing the game"
+	rm -f $(PREFIX)/bin/$(BINNAME)

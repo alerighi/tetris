@@ -1,4 +1,5 @@
 #include <curses.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "screen.h"
@@ -175,7 +176,7 @@ void init_graphics(void)
 	keypad(stdscr, true);  /* for special keys */
 	noecho();              /* do not echo character on screen */
 	curs_set(false);       /* do not show cursor */
-	timeout(10);		   /* wait 10ms for input */
+	timeout(100);		   /* wait 100ms for input */
 
 	/* ensure correct ncurses termination on exit */
 	atexit((void (*)(void)) endwin);		
@@ -193,12 +194,13 @@ void init_graphics(void)
 
 	refresh();
 	draw_windows();
+	refresh_screen();
 }
 
 void main_loop(void)
 {
 	while (true) {
-		delay -= 10;
+		delay -= 100;
 		if (delay <= 0)
 			move_down();
 		switch (getch()) {

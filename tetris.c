@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <stdio.h>
-#include <signal.h>
 #include <time.h>
 
 #include "game.h"
@@ -45,8 +44,8 @@ int main(int argc, char *argv[])
 	srand((unsigned int) time(NULL));
 	parse_cmdline(argc, argv);
 	init_score();
-	init_graphics();
 	start_new_game();
+	init_graphics();
 	main_loop();
 	return EXIT_SUCCESS;
 }
