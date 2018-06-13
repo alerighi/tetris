@@ -84,7 +84,7 @@ static int eliminate_lines(void)
 	}
 	
 	/* calculate points based on number of lines eliminated */
-	const int points_per_line[] = { 0, 1, 40, 300, 1200 };
+	const int points_per_line[] = { 1, 40, 100, 300, 1200 };
 
 	return points_per_line[lines_eliminated];
 }
