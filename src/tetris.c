@@ -41,11 +41,10 @@ static void parse_cmdline(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-	srand((unsigned int) time(NULL));
+	srand((unsigned) time(NULL));
 	parse_cmdline(argc, argv);
 	init_score();
 	start_new_game();
 	init_graphics();
 	main_loop();
-	return EXIT_SUCCESS;
 }
