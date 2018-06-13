@@ -13,9 +13,9 @@ HEADERS:=$(wildcard $(INCLUDEDIR)/*.h)
 OBJECTS:=$(patsubst $(SOURCEDIR)/%.c, $(BUILDDIR)/%.o, $(SOURCES))
 PREFIX:=/usr/local
 
-.PHONY: all clean install uninstall
+.PHONY: binary clean install uninstall
 
-all: $(BUILDDIR) $(BINNAME)
+binary: $(BUILDDIR) $(BINNAME)
 
 $(BUILDDIR)/%.o: $(SOURCEDIR)/%.c $(HEADERS)
 	$(CC) $(CFLAGS) -c -I$(INCLUDEDIR) -o $@ $< $(CFLAGS)
@@ -24,13 +24,13 @@ $(BINNAME): $(OBJECTS)
 	$(CC) $(LDFLAGS) -o $@ $^ 
 
 $(BUILDDIR):
-	mkdir $(BUILDDIR)
+	mkdir -p $(BUILDDIR)
 
 clean:
 	rm -rf $(BUILDDIR)
 	rm -f $(BINNAME)
 
-install: $(BINNAME) $(MAN_PAGE)
+install: binary
 	install -s $(BINNAME) $(PREFIX)/bin
 
 uninstall:
