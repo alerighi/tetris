@@ -2,37 +2,32 @@
 # Copyright (c) 2016-2018 - Alessandro Righi - All rights reserved
 # You are free to use and modify this makefile under the terms of the MIT licence
 
-CFLAGS=-O3 -Wall -Wextra -pedantic -std=c11
-LDFLAGS=-lcurses
-BINNAME=tetris
-OBJS=tetris.o game.o screen.o pieces.o score.o 
-PREFIX=/usr/local
-VERSION=1.4.0
+SOURCEDIR:=src
+INCLUDEDIR:=include
+BUILDDIR:=build
+CFLAGS:=-O3 -Wall -Wextra -pedantic -std=c11
+LDFLAGS:=-lcurses
+BINNAME:=tetris
+SOURCES:=$(wildcard $(SOURCEDIR)/*.c)
+HEADERS:=$(wildcard $(HEADERSDIR)/*.h)
+OBJECTS:=$(patsubst $(SOURCEDIR)/%.c, $(BUILDDIR)/%.o, $(SOURCES))
+PREFIX:=/usr/local
 
 .PHONY: all clean install uninstall
 
-all: $(BINNAME)
+all: $(BUILDDIR) $(BINNAME)
 
-tetris.o: tetris.c game.h screen.h score.h 
-	$(CC) -c -o $@ $< $(CFLAGS)
+$(BUILDDIR)/%.o: $(SOURCEDIR)/%.c $(HEADERS)
+	$(CC) $(CFLAGS) -c -I$(INCLUDEDIR) -o $@ $< $(CFLAGS)
 
-screen.o: screen.c screen.h game.h score.h 
-	$(CC) -c -o $@ $< $(CFLAGS)
+$(BINNAME): $(OBJECTS)
+	$(CC) $(LDFLAGS) -o $@ $^ 
 
-game.o: game.c game.h screen.h pieces.h score.h 
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-score.o: score.c score.h 
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-pieces.o: pieces.c pieces.h 
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-$(BINNAME): $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+$(BUILDDIR):
+	mkdir $(BUILDDIR)
 
 clean:
-	rm -f *.o 
+	rm -rf $(BUILDDIR)
 	rm -f $(BINNAME)
 
 install: $(BINNAME) $(MAN_PAGE)
