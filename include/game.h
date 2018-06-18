@@ -9,6 +9,6 @@ void move_left(void);
 void move_right(void);
 void rotate(void);
 void start_new_game(void);
-void get_next_piece(char next[4][4]);
+void get_next_piece(char next[static 4][4]);
 
 #endif /* GAME_H */

@@ -165,7 +165,7 @@ void rotate(void)
 	add_current_piece();
 }
 
-void get_next_piece(char next[4][4])
+void get_next_piece(char next[static 4][4])
 {
 	for (int y = 0; y < 4; y++) {
 		for (int x = 0; x < 4; x++) {
