@@ -169,7 +169,7 @@ static void destroy_windows(void)
 	refresh();
 }
 
-void init_graphics(void)
+static void init_graphics(void)
 {
 	initscr();
 	cbreak();              /* unbuffered input */
@@ -199,6 +199,7 @@ void init_graphics(void)
 
 void main_loop(void)
 {
+	init_graphics();
 	while (true) {
 		delay -= 100;
 		if (delay <= 0)

@@ -45,6 +45,5 @@ int main(int argc, char *argv[])
 	parse_cmdline(argc, argv);
 	init_score();
 	start_new_game();
-	init_graphics();
 	main_loop();
 }

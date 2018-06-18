@@ -9,7 +9,6 @@ enum {
 extern char screen[Y][X];
 
 void prompt_new_game(void);
-void init_graphics(void);
 void main_loop(void);
 
 #endif /* SCREEN_H */
