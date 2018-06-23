@@ -15,7 +15,8 @@ static void load_score(void)
 	FILE* score_fp;
 
 	if ((score_fp = fopen(score_filename, "r"))) {
-		fscanf(score_fp, "%d", &high_score);
+		if (fscanf(score_fp, "%d", &high_score) != 1)
+			high_score = 0;
 		fclose(score_fp);
 	} else {
 		/* open fail for other reason than non existing file */
