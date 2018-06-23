@@ -6,7 +6,7 @@ SOURCEDIR:=src
 INCLUDEDIR:=include
 BUILDDIR:=build
 CFLAGS:=-O3 -Wall -Wextra -pedantic -std=c11
-LDFLAGS:=-lcurses
+LDFLAGS:=-lncurses -lm
 BINNAME:=tetris
 SOURCES:=$(wildcard $(SOURCEDIR)/*.c)
 HEADERS:=$(wildcard $(INCLUDEDIR)/*.h)
@@ -21,7 +21,7 @@ $(BUILDDIR)/%.o: $(SOURCEDIR)/%.c $(HEADERS)
 	$(CC) $(CFLAGS) -c -I$(INCLUDEDIR) -o $@ $< $(CFLAGS)
 
 $(BINNAME): $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $@ $^ 
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 $(BUILDDIR):
 	mkdir -p $(BUILDDIR)
