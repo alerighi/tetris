@@ -18,7 +18,7 @@ PREFIX:=/usr/local
 binary: $(BUILDDIR) $(BINNAME)
 
 $(BUILDDIR)/%.o: $(SOURCEDIR)/%.c $(HEADERS)
-	$(CC) $(CFLAGS) -c -I$(INCLUDEDIR) -o $@ $< $(CFLAGS)
+	$(CC) $(CFLAGS) -c -I$(INCLUDEDIR) -o $@ $<
 
 $(BINNAME): $(OBJECTS)
 	$(CC) -o $@ $^ $(LDFLAGS)
