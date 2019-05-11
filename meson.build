@@ -6,6 +6,8 @@ sources = [
 	'src/pieces.c', 
 	'src/score.c',
 ]
-ncursess = dependency('curses')
+cc = meson.get_compiler('c')
+ncursess = cc.find_library('ncurses')
+math = cc.find_library('m')
 include_dir = include_directories('include')
-executable('tetris', sources, dependencies: ncursess, include_directories: include_dir, install: true) 
+executable('tetris', sources, dependencies: [ncursess, math], include_directories: include_dir, install: true) 
