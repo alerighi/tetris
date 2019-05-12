@@ -1,4 +1,13 @@
-project('tetris', 'c')
+project('tetris', 'c', 
+	version: '1.2', 
+	license: 'GPL3', 
+	default_options: [
+		'c_std=c11',
+		'warning_level=3',
+		'optimization=3',
+		'strip=true',
+	]
+)
 sources = [
 	'src/tetris.c', 
 	'src/screen.c',
