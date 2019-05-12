@@ -1,5 +1,5 @@
 project('tetris', 'c', 
-	version: '1.2', 
+	version: '1.4.0', 
 	license: 'GPL3', 
 	default_options: [
 		'c_std=c11',
