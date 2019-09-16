@@ -2,7 +2,7 @@
 
 Tetris game written in C with ncurses libraries. 
 
-Check out also the [new Rust rewrite](https://gitbub.com/alerighi/tetris-rust)!
+Check out also the [new Rust rewrite](https://github.com/alerighi/tetris-rust)!
 
 ### Installation 
 
