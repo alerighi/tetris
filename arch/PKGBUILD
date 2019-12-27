@@ -1,7 +1,7 @@
 pkgname='tetris-git'
-pkgver=r84.33cf2b4
+pkgver=r90.a17167a
 pkgrel=1
-pkgdesc='Cli tetris game'
+pkgdesc='ncurses CLI tetris game'
 arch=('i686' 'x86_64' 'armv7h' 'aarch64')
 url='https://github.com/alerighi/tetris'
 license=('GPL3.0')
@@ -22,7 +22,6 @@ build() {
 }
 
 package() {
-    cd "$srcdir/tetris/"
-    make install
+    install -D -m0755 "$srcdir/tetris/tetris" "$pkgdir/usr/bin/tetris"
 }
 
