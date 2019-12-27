@@ -6,7 +6,6 @@ arch=('i686' 'x86_64' 'armv7h' 'aarch64')
 url='https://github.com/alerighi/tetris'
 license=('GPL3.0')
 depends=('ncurses')
-makedepends=('meson' 'ninja')
 provides=('tetris-git')
 conflicts=('tetris-git')
 source=("git+https://github.com/alerighi/tetris.git")
@@ -19,14 +18,11 @@ pkgver() {
 
 build() {
     cd "$srcdir/tetris"
-    rm -rf build/
-    meson build --buildtype=release --prefix="$pkgdir/usr/"
-    cd build
-    ninja
+    make
 }
 
 package() {
-    cd "$srcdir/tetris/build/"
-    ninja install
+    cd "$srcdir/tetris/"
+    make install
 }
 
