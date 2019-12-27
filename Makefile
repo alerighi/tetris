@@ -14,35 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SOURCEDIR:=src
-BUILDDIR:=build
-CFLAGS:=-O2 -Wall -Wextra -pedantic -Wno-vla -std=c99
-LDFLAGS:=-lncurses -lm
-BINNAME:=tetris
-SOURCES:=$(wildcard $(SOURCEDIR)/*.c)
-HEADERS:=$(wildcard $(SOURCEDIR)/*.h)
-OBJECTS:=$(patsubst $(SOURCEDIR)/%.c, $(BUILDDIR)/%.o, $(SOURCES))
-PREFIX:=/usr/local
+SOURCES=src/screen.c src/game.c src/pieces.c src/score.c
+HEADERS=src/screen.h src/game.h src/pieces.h src/score.h
+CFLAGS=-O2 -Wall -Wextra -pedantic -Wno-vla -std=c99 -lncurses -lm
+BINNAME=tetris
 
-.PHONY: binary clean install uninstall
-
-binary: $(BUILDDIR) $(BINNAME)
-
-$(BUILDDIR)/%.o: $(SOURCEDIR)/%.c $(HEADERS)
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-$(BINNAME): $(OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS)
-
-$(BUILDDIR):
-	mkdir -p $(BUILDDIR)
-
-clean:
-	rm -rf $(BUILDDIR)
-	rm -f $(BINNAME)
-
-install: binary
-	install -s $(BINNAME) $(PREFIX)/bin
-
-uninstall:
-	rm -f $(PREFIX)/bin/$(BINNAME)
+$(BINNAME): $(SOURCES) $(HEADERS)
+	$(CC) $(CFLAGS) $(SOURCES) -o $@
