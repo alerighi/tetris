@@ -1,5 +1,5 @@
 # tetris - a small ncursess tetris game
-# Copyright (C) 2016-2019 Alessandro Righi
+# Copyright (C) 2016-2020 Alessandro Righi
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,8 +16,9 @@
 
 SOURCES=src/screen.c src/game.c src/pieces.c src/score.c
 HEADERS=src/screen.h src/game.h src/pieces.h src/score.h
-CFLAGS=-O2 -Wall -Wextra -pedantic -Wno-vla -std=c99 -lncurses -lm
+CFLAGS=-O2 -Wall -Wextra -pedantic -Wno-vla -std=c99 
+LDFLAGS=-lncurses -lm
 BINNAME=tetris
 
 $(BINNAME): $(SOURCES) $(HEADERS)
-	$(CC) $(CFLAGS) $(SOURCES) -o $@
+	$(CC) $(CFLAGS) $(SOURCES) -o $@ $(LDFLAGS)
